@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<title>Neuropulse Inc. | Software development</title>
+<meta name="description" content="Neuropulse Inc. builds custom web and software solutions for South African businesses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header><div class="wrap">
+<a class="brand" href="#top" aria-label="Neuropulse Inc. home">
+<svg width="34" height="34" viewBox="8 6 84 82" fill="none" aria-hidden="true"><defs><linearGradient id="g" gradientUnits="userSpaceOnUse" x1="0" y1="8" x2="0" y2="84"><stop offset="0" stop-color="#2BB0FF"/><stop offset="1" stop-color="#0B5FD6"/></linearGradient></defs><g stroke="url(#g)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M48 12C40 8 30 11 28 19C20 19 14 27 18 35C11 40 12 50 19 54C16 62 22 70 30 70C32 78 41 83 48 80Z"/><path d="M52 12C60 8 70 11 72 19C80 19 86 27 82 35C89 40 88 50 81 54C84 62 78 70 70 70C68 78 59 83 52 80Z"/><path d="M48 30H36L30 38M48 50H38L32 56M48 64H40M52 30H64L70 38M52 50H62L68 56M52 64H60"/><circle cx="30" cy="38" r="2.5"/><circle cx="32" cy="56" r="2.5"/><circle cx="40" cy="64" r="2.5"/><circle cx="70" cy="38" r="2.5"/><circle cx="68" cy="56" r="2.5"/><circle cx="60" cy="64" r="2.5"/></g></svg>
+<span>Neuro<b>pulse</b> <small>Inc.</small></span></a>
+<nav aria-label="Main"><a href="#services">Services</a><a href="#projects">Projects</a><a href="#process">Process</a><a class="btn" href="#contact">Start a project</a></nav>
+</div></header>
+
+<main id="top">
+<section class="hero"><div class="wrap">
+<h1>Smarter Technology. <span>Brighter Futures.</span></h1>
+<p>Neuropulse Inc. is a software development company. We design and build custom web applications, websites and business systems that are simple to use and built to last.</p>
+<div class="row"><a class="btn" href="#contact">Start a project</a><a class="btn ghost" href="#projects">See our projects</a></div>
+<div class="tag">IDEAS · INTELLIGENCE · IMPACT</div>
+</div></section>
+
+<section id="services"><div class="wrap">
+<h2>What we build</h2><p class="lead">From a first idea to a working product. Tell us the problem and we will recommend the simplest solution.</p>
+<div class="grid">
+<div class="card"><h3>Web applications</h3><p>Custom platforms, dashboards and portals with secure logins and a database behind them.</p></div>
+<div class="card"><h3>Business websites</h3><p>Fast, responsive websites that explain what you do and bring in enquiries.</p></div>
+<div class="card"><h3>Android apps</h3><p>Native Android apps built with Kotlin for your customers or your team.</p></div>
+<div class="card"><h3>APIs and databases</h3><p>Back-end systems, data models and integrations that connect your tools together.</p></div>
+</div></div></section>
+
+<section id="projects" class="alt"><div class="wrap">
+<h2>Projects</h2><p class="lead">What we are building under Neuropulse. More will be added as they launch.</p>
+<div class="grid">
+<div class="card"><span class="badge">In development</span><h3>WorkLink</h3>
+<p>A job marketplace where anyone can browse jobs, requesters post work and hire, and workers apply and get paid. Browsing is public, and signing in unlocks applying and posting.</p>
+<div class="stack"><span>React</span><span>Node.js</span><span>Express</span><span>PostgreSQL</span><span>Prisma</span></div></div>
+<div class="card"><span class="badge">Open slot</span><h3>Your project</h3>
+<p>Have an idea or a problem to solve? Tell us about it and it could be the next project listed here.</p>
+<p style="margin-top:20px"><a class="btn" href="#contact">Start a project</a></p></div>
+</div></div></section>
+
+<section id="process"><div class="wrap">
+<h2>How we work</h2><p class="lead">A simple process so you always know what happens next.</p>
+<div class="grid">
+<div class="card"><div class="num">01</div><h3>Discover</h3><p>We listen, ask questions and agree what success looks like.</p></div>
+<div class="card"><div class="num">02</div><h3>Design</h3><p>We plan the screens and the system and share them for your feedback.</p></div>
+<div class="card"><div class="num">03</div><h3>Build</h3><p>We build in small steps and show you working progress along the way.</p></div>
+<div class="card"><div class="num">04</div><h3>Launch and support</h3><p>We put it online, train you to use it and stay available to improve it.</p></div>
+</div></div></section>
+
+<section id="contact" class="alt"><div class="wrap">
+<h2>Start a project</h2><p class="lead">Fill in a few details and your email app will open with the message ready to send to us.</p>
+<form id="enquiry">
+<div><label for="name">Your name</label><input id="name" required autocomplete="name"></div>
+<div><label for="email">Your email</label><input id="email" type="email" required autocomplete="email"></div>
+<div><label for="type">What do you need?</label><select id="type"><option>Web application</option><option>Business website</option><option>Android app</option><option>API or database</option><option>Not sure yet</option></select></div>
+<div><label for="budget">Budget range</label><select id="budget"><option>Not sure yet</option><option>Under R10 000</option><option>R10 000 to R50 000</option><option>R50 000 to R150 000</option><option>Over R150 000</option></select></div>
+<div class="full"><label for="msg">Tell us about your project</label><textarea id="msg" required></textarea></div>
+<div class="full row"><button class="btn" type="submit">Send enquiry</button><span class="note" style="align-self:center">Or email us directly: <a href="mailto:info@neuropulseinc.com">info@neuropulseinc.com</a></span></div>
+</form>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+<div><strong style="color:var(--text)">Neuropulse Inc.</strong><br>South Africa</div>
+<div>info@neuropulseinc.com<br>www.neuropulseinc.com</div>
+<div>&copy; <span id="yr">2026</span> Neuropulse Inc.</div>
+</div></footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
