@@ -1,0 +1,44 @@
+// Cloudflare Worker configuration for the Neuropulse Inc. website.
+// Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "neuropulse-inc",
+  "main": "src/server/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // `npm run build` assembles src/client into public/ before every dev/deploy.
+  "build": { "command": "node scripts/build.mjs" },
+
+  // Static files are served from Cloudflare's edge; only /api/* runs the Worker.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // D1 database. The code uses the binding name "DB": keep exactly one entry.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "neuropulse-db",
+      "database_id": "f22aca58-b1c6-454d-ac2a-f04880c1c56f",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Daily housekeeping at 02:00 SAST.
+  "triggers": { "crons": ["0 0 * * *"] },
+
+  "vars": {
+    "SITE_NAME": "Neuropulse Inc.",
+    "SITE_URL": "https://neuropulse-inc.workers.dev",
+    "NOTIFY_EMAIL": "neuropulse.inc@gmail.com",
+    "MAIL_FROM": "Neuropulse Website <onboarding@resend.dev>",
+    "TURNSTILE_SITE_KEY": ""
+  },
+
+  "observability": { "enabled": true }
+}

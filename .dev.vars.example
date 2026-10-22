@@ -1,0 +1,11 @@
+# Copy to .dev.vars for local development (never commit .dev.vars).
+# In production set each one with:  npx wrangler secret put NAME
+
+# Random string used to hash visitor IPs for rate limiting. Any long random value.
+IP_SALT=change-me-to-a-long-random-string
+
+# Optional: email notifications for new enquiries (https://resend.com, free tier).
+# RESEND_API_KEY=re_xxxxxxxxx
+
+# Optional: Cloudflare Turnstile bot protection. Put the SITE key in wrangler.jsonc vars.
+# TURNSTILE_SECRET_KEY=0x4AAAAAAAxxxxxxxx

@@ -1,0 +1,53 @@
+/* Design tokens: Neuropulse brand kit v1.0 (02-Colour-Scheme, 08-Fonts). */
+@font-face { font-family: 'Outfit'; src: url('/assets/fonts/Outfit-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Outfit'; src: url('/assets/fonts/Outfit-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'DM Sans'; src: url('/assets/fonts/DMSans-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'DM Sans'; src: url('/assets/fonts/DMSans-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+
+:root {
+  /* Brand palette */
+  --ink: #0A0C10;
+  --ink-2: #0F141B;
+  --ink-3: #161D27;
+  --pulse: #1E9BFF;
+  --pulse-hi: #2BB0FF;
+  --deep: #0B5FD6;
+  --steel: #8FA0B5;
+  --mist: #C9D4E2;
+  --paper: #F4F8FC;
+  --paper-2: #E7EEF6;
+  --white: #FFFFFF;
+
+  /* Roles */
+  --line-dark: rgba(201, 212, 226, 0.12);
+  --line-dark-strong: rgba(201, 212, 226, 0.22);
+  --line-light: #D3DDE9;
+  --text-on-dark: #F4F8FC;
+  --muted-on-dark: #9FB0C4;
+  --text-on-light: #0A0C10;
+  --muted-on-light: #4A5869;
+  --success: #2FD18B;
+  --danger: #FF6B6B;
+  --brand-gradient: linear-gradient(180deg, #2BB0FF 0%, #0B5FD6 100%);
+
+  /* Type */
+  --font-display: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --step--1: 0.875rem;   /* 14 */
+  --step-0: 1.0625rem;   /* 17 body */
+  --step-1: 1.25rem;     /* 20 */
+  --step-2: 1.625rem;    /* 26 */
+  --step-3: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);   /* section titles */
+  --step-4: clamp(2.5rem, 1.4rem + 4.6vw, 5.25rem);    /* hero */
+
+  /* Space and shape */
+  --gutter: clamp(16px, 4vw, 40px);
+  --section-y: clamp(72px, 10vw, 136px);
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+  --max: 1200px;
+  --topbar-h: 72px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

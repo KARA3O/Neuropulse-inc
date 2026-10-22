@@ -1,0 +1,50 @@
+flowchart TB
+    req["Incoming request"] --> entry
+
+    subgraph worker["src/server (Cloudflare Worker)"]
+        entry["index.js<br/>entry: fetch() + scheduled()"]
+        entry -->|"not /api/*"| assetsfb["env.ASSETS.fetch()"]
+        entry -->|"/api/*"| mw
+
+        subgraph mw["middleware/"]
+            sec["security.js<br/>same-origin (CSRF) check"]
+            rl["rate-limit.js<br/>fixed window in D1"]
+            auth["auth.js<br/>session cookie → admin"]
+        end
+
+        mw --> router["router.js<br/>method + path → handler"]
+        router --> routes
+
+        subgraph routes["routes/ (controllers)"]
+            pub["public.routes.js"]
+            adm["admin.routes.js"]
+        end
+
+        routes --> services
+        routes --> repos
+
+        subgraph services["services/ (business logic, external APIs)"]
+            authsvc["auth.service.js"]
+            notify["notify.service.js"]
+            ts["turnstile.service.js"]
+        end
+
+        services --> repos
+
+        subgraph repos["repositories/ (data access, SQL only here)"]
+            pr["projects.repo.js"]
+            er["enquiries.repo.js"]
+            sr["subscribers.repo.js"]
+            ar["admins.repo.js"]
+        end
+
+        subgraph lib["lib/ (pure helpers, unit-tested)"]
+            http["http.js"]
+            val["validate.js"]
+            cry["crypto.js"]
+        end
+    end
+
+    repos --> d1[("D1")]
+    routes -.-> lib
+    services -.-> lib

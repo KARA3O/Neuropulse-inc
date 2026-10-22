@@ -1,0 +1,48 @@
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <a class="brand brand--lg" href="/" aria-label="Neuropulse Inc. home">
+        {{> logo-mark}}
+        <span class="brand__word">Neuro<span class="brand__pulse">pulse</span><span class="brand__inc">Inc.</span></span>
+      </a>
+      <p class="footer__tagline">{{site.tagline}}</p>
+
+      <form class="subscribe" data-subscribe novalidate>
+        <label for="subscribe-email">Get an email when we launch new work</label>
+        <div class="subscribe__row">
+          <input id="subscribe-email" name="email" type="email" autocomplete="email" placeholder="you@company.co.za" required>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn btn--primary btn--sm" type="submit">Subscribe</button>
+        </div>
+        <p class="subscribe__msg" role="status" data-subscribe-msg></p>
+      </form>
+    </div>
+
+    <nav class="footer__col" aria-label="Footer">
+      <h2>Company</h2>
+      <a href="/#services">Services</a>
+      <a href="/work">Our work</a>
+      <a href="/#process">How we work</a>
+      <a href="/#about">About</a>
+      <a href="/privacy">Privacy policy</a>
+    </nav>
+
+    <div class="footer__col">
+      <h2>Contact</h2>
+      <a href="mailto:{{site.email}}">{{site.email}}</a>
+      <a href="tel:{{site.phoneIntl}}">{{site.phoneDisplay}}</a>
+      <a href="{{site.whatsapp}}" target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+      <span>{{site.region}}, {{site.country}}</span>
+    </div>
+
+    <div class="footer__col">
+      <h2>Follow</h2>
+      {{socials}}
+    </div>
+  </div>
+
+  <div class="wrap footer__base">
+    <span>&copy; {{year}} Neuropulse Inc. All rights reserved.</span>
+    <span class="footer__motto">{{site.motto}}</span>
+  </div>
+</footer>

@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor A as Admin
+    participant B as Browser (/admin)
+    participant W as Worker
+    participant D as D1
+
+    A->>B: Email + password
+    B->>W: POST /api/admin/login
+    W->>D: rate limit (8 per 15 min)
+    W->>D: SELECT admin by email
+    W->>W: PBKDF2-SHA256 verify (100k iterations, constant-time compare)
+    alt wrong email or password
+        W-->>B: 401 (same message and timing either way)
+    end
+    W->>W: token = 256-bit random
+    W->>D: INSERT sessions (sha256(token), expires +7 days)
+    W-->>B: Set-Cookie np_session (HttpOnly, Secure, SameSite=Strict)
+    B->>W: GET /api/admin/stats (cookie sent automatically)
+    W->>D: JOIN sessions/admins WHERE token_hash AND not expired
+    W-->>B: 200 data
+    Note over W,D: Daily cron at 00:00 UTC deletes expired sessions and old rate-limit rows

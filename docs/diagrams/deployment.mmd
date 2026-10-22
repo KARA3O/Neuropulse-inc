@@ -1,0 +1,8 @@
+flowchart LR
+    dev["Developer laptop<br/>VS Code"] -->|"git push"| gh["GitHub<br/>KARA3O/Neuropulse-inc"]
+    dev -->|"npm run deploy"| wr["Wrangler CLI"]
+    gh -.->|"optional: GitHub Actions<br/>.github/workflows/deploy.yml"| wr
+    wr -->|"1. node scripts/build.mjs<br/>src/client → public/"| build["public/"]
+    wr -->|"2. upload Worker + assets"| edge["Cloudflare global network<br/>(incl. Johannesburg & Cape Town PoPs)"]
+    wr -->|"3. d1 migrations apply --remote"| d1[("D1 neuropulse-db")]
+    edge --> url["https://neuropulse-inc.&lt;subdomain&gt;.workers.dev<br/>→ later neuropulseinc.com"]

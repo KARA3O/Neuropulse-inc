@@ -1,0 +1,34 @@
+<!--meta {"title":"Our work | Neuropulse Inc.","description":"Websites, booking systems and web applications built by Neuropulse Inc. for South African businesses. Visit each live site.","path":"/work","nav":"work"}-->
+{{> head}}
+</head>
+<body class="page-work">
+{{> header}}
+
+<main id="main">
+  <section class="page-hero" aria-labelledby="work-page-title">
+    <div class="wrap">
+      <h1 class="page-hero__title" id="work-page-title">Our work</h1>
+      <p class="page-hero__lede">Every business here trusted us with their website or system. Open any live project in a new tab and try it the way their customers do.</p>
+      <div class="filters" role="group" aria-label="Filter projects" data-filters>
+        <button type="button" class="filter" aria-pressed="true" data-filter="all">All</button>
+        <button type="button" class="filter" aria-pressed="false" data-filter="live">Live</button>
+        <button type="button" class="filter" aria-pressed="false" data-filter="in_development">In development</button>
+        <button type="button" class="filter" aria-pressed="false" data-filter="coming_soon">Coming soon</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink work work--page" aria-label="Projects">
+    <div class="wrap">
+      <div class="work-grid" data-work-grid aria-live="polite">
+        <div class="work-skeleton" aria-hidden="true"></div>
+        <div class="work-skeleton" aria-hidden="true"></div>
+        <div class="work-skeleton" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{{> footer}}
+</body>
+</html>

@@ -1,0 +1,139 @@
+/* ---- Top bar ------------------------------------------------------------------------------
+   The memorable piece of the site. Three things move:
+   1. the logo's six circuit nodes fire in sequence like a signal crossing the brain,
+   2. a heartbeat trace runs along the bottom edge, with a bright scan travelling across it,
+   3. the same trace fills with brand gradient as you scroll (reading progress).
+   The bar also compacts and frosts once you leave the top of the page. */
+
+.topbar {
+  position: fixed; inset: 0 0 auto; z-index: 50;
+  padding-top: env(safe-area-inset-top, 0px);
+  transition: background-color .4s var(--ease-out), backdrop-filter .4s var(--ease-out);
+}
+.topbar.is-scrolled { background: rgba(10, 12, 16, 0.72); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); }
+.topbar__inner {
+  max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter);
+  height: var(--topbar-h); display: flex; align-items: center; gap: 24px;
+  transition: height .4s var(--ease-out);
+}
+.topbar.is-scrolled .topbar__inner { height: 60px; }
+
+/* Brand */
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-on-dark); flex: none; }
+.brand .logo-mark { width: 36px; height: 36px; transition: transform .6s var(--ease-out); }
+.brand:hover .logo-mark { transform: rotate(-6deg) scale(1.06); }
+.brand__word { font: 600 1.375rem/1 var(--font-display); letter-spacing: -0.02em; display: inline-flex; align-items: baseline; }
+.brand__pulse { color: var(--pulse); }
+.brand__inc { font: 400 0.8125rem/1 var(--font-body); color: var(--steel); margin-left: 6px; letter-spacing: 0; }
+.brand--lg .logo-mark { width: 48px; height: 48px; }
+.brand--lg .brand__word { font-size: 1.75rem; }
+
+.logo-nodes circle { fill: var(--ink-3); stroke: var(--pulse); stroke-width: 1.6; animation: node-fire 3.2s infinite; }
+.logo-nodes circle:nth-child(1), .logo-nodes circle:nth-child(2) { animation-delay: 0s; }
+.logo-nodes circle:nth-child(3), .logo-nodes circle:nth-child(4) { animation-delay: .35s; }
+.logo-nodes circle:nth-child(5), .logo-nodes circle:nth-child(6) { animation-delay: .7s; }
+@keyframes node-fire {
+  0%, 30%, 100% { fill: var(--ink-3); filter: none; }
+  8% { fill: var(--pulse-hi); filter: drop-shadow(0 0 3px var(--pulse-hi)); }
+}
+
+/* Navigation with a sliding indicator that follows hover and the section in view */
+.nav { position: relative; display: flex; align-items: center; gap: 4px; margin-inline: auto; }
+.nav__link {
+  position: relative; z-index: 1; padding: 8px 14px; border-radius: 999px;
+  color: var(--muted-on-dark); text-decoration: none; font-weight: 500; font-size: 0.9375rem;
+  transition: color .25s;
+}
+.nav__link:hover, .nav__link.is-active, .nav__link[aria-current='page'] { color: var(--text-on-dark); }
+.nav__indicator {
+  position: absolute; top: 0; left: 0; height: 100%; width: 0; border-radius: 999px;
+  background: rgba(30, 155, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(30, 155, 255, 0.28);
+  opacity: 0; transition: transform .45s var(--ease-out), width .45s var(--ease-out), opacity .3s;
+  pointer-events: none;
+}
+.nav__indicator::after { /* small node under the active link */
+  content: ''; position: absolute; left: 50%; bottom: -7px; width: 5px; height: 5px; margin-left: -2.5px;
+  border-radius: 50%; background: var(--pulse-hi); box-shadow: 0 0 8px var(--pulse-hi);
+}
+.nav__indicator.is-visible { opacity: 1; }
+
+.topbar__actions { display: flex; align-items: center; gap: 10px; flex: none; }
+.icon-btn {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  color: var(--text-on-dark); border: 1px solid var(--line-dark-strong); transition: border-color .2s, color .2s, background .2s;
+}
+.icon-btn:hover { border-color: #25D366; color: #25D366; background: rgba(37, 211, 102, 0.08); }
+.icon-btn .icon { width: 18px; height: 18px; }
+
+/* The signal trace */
+.signal { position: relative; height: 14px; margin-top: -7px; pointer-events: none; }
+.signal > span {
+  position: absolute; inset: 0;
+  --ecg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='14' viewBox='0 0 260 14'%3E%3Cpath d='M0 7H118L124 7L129 2L135 13L141 0L147 11L151 7H260' fill='none' stroke='white' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+  -webkit-mask: var(--ecg) repeat-x 0 50% / 260px 14px;
+          mask: var(--ecg) repeat-x 0 50% / 260px 14px;
+  animation: ecg-run 6s linear infinite;
+}
+.signal__base { background: rgba(143, 160, 181, 0.22); }
+.signal__scan {
+  background: linear-gradient(90deg, transparent 0, transparent 40%, var(--pulse-hi) 50%, transparent 60%, transparent 100%) no-repeat;
+  background-size: 50% 100%;
+  animation: ecg-run 6s linear infinite, scan 3.2s var(--ease-out) infinite !important;
+  filter: drop-shadow(0 0 4px var(--pulse));
+}
+.signal__progress {
+  background: linear-gradient(90deg, var(--deep), var(--pulse-hi));
+  clip-path: inset(0 calc(100% - var(--progress, 0%)) 0 0);
+}
+@keyframes ecg-run { to { -webkit-mask-position: -260px 50%; mask-position: -260px 50%; } }
+@keyframes scan { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
+/* Fade the trace out at both edges so it reads as a signal, not a border. */
+.signal { -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+
+/* Mobile menu */
+.menu-btn { display: none; width: 44px; height: 44px; border: 1px solid var(--line-dark-strong); border-radius: 50%; background: transparent; cursor: pointer; position: relative; }
+.menu-btn__bars, .menu-btn__bars::before, .menu-btn__bars::after {
+  position: absolute; left: 50%; width: 18px; height: 1.6px; margin-left: -9px; background: currentColor; border-radius: 2px;
+  transition: transform .35s var(--ease-out), opacity .2s;
+}
+.menu-btn__bars { top: 50%; }
+.menu-btn__bars::before, .menu-btn__bars::after { content: ''; left: 0; margin-left: 0; }
+.menu-btn__bars::before { transform: translateY(-6px); }
+.menu-btn__bars::after { transform: translateY(6px); }
+.menu-btn[aria-expanded='true'] .menu-btn__bars { background: transparent; }
+.menu-btn[aria-expanded='true'] .menu-btn__bars::before { transform: rotate(45deg); background: var(--text-on-dark); }
+.menu-btn[aria-expanded='true'] .menu-btn__bars::after { transform: rotate(-45deg); background: var(--text-on-dark); }
+
+.mobile-menu {
+  position: fixed; inset: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)) 0 0; background: var(--ink);
+  padding: 24px var(--gutter) 40px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto;
+}
+.mobile-menu nav { display: flex; flex-direction: column; }
+.mobile-menu nav a {
+  font: 600 2rem/1.1 var(--font-display); text-decoration: none; padding: 14px 0; border-bottom: 1px solid var(--line-dark);
+  opacity: 0; transform: translateY(12px); animation: menu-in .5s var(--ease-out) forwards;
+}
+.mobile-menu nav a:nth-child(2) { animation-delay: .04s; }
+.mobile-menu nav a:nth-child(3) { animation-delay: .08s; }
+.mobile-menu nav a:nth-child(4) { animation-delay: .12s; }
+.mobile-menu nav a:nth-child(5) { animation-delay: .16s; }
+.mobile-menu nav a:nth-child(6) { animation-delay: .2s; color: var(--pulse); }
+@keyframes menu-in { to { opacity: 1; transform: none; } }
+.mobile-menu__foot { display: flex; flex-direction: column; gap: 10px; margin-top: 32px; color: var(--muted-on-dark); }
+.mobile-menu__foot a { text-decoration: none; }
+body.menu-open { overflow: hidden; }
+/* backdrop-filter would make the fixed menu position relative to the bar, so drop it while open */
+.topbar.menu-is-open { background: var(--ink); backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+@media (max-width: 960px) {
+  .nav { display: none; }
+  .menu-btn { display: block; }
+  .topbar__actions { margin-left: auto; }
+}
+@media (max-width: 520px) {
+  .topbar__actions .topbar__cta { display: none; }
+  .brand__inc { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal > span, .logo-nodes circle { animation: none !important; }
+}

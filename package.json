@@ -1,0 +1,37 @@
+{
+  "name": "neuropulse-inc",
+  "version": "1.0.0",
+  "description": "Neuropulse Inc. company website: showcase, project enquiries and admin dashboard on Cloudflare Workers + D1.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Neuropulse Inc. <neuropulse.inc@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KARA3O/Neuropulse-inc.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "wrangler dev",
+    "setup:local": "npm run db:migrate:local && echo \"Now run: npm run admin:create -- --email you@example.com --name You\"",
+    "db:migrate:local": "wrangler d1 migrations apply neuropulse-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply neuropulse-db --remote",
+    "db:create": "wrangler d1 create neuropulse-db",
+    "admin:create": "node scripts/create-admin.mjs",
+    "test": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:smoke": "node tests/smoke/smoke.mjs",
+    "check": "npm run build && npm test && wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "deploy": "npm run check && wrangler deploy",
+    "logs": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.152.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261019.1": true,
+    "esbuild@0.28.2": true
+  }
+}

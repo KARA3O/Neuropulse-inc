@@ -1,0 +1,49 @@
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar" data-topbar>
+  <div class="topbar__inner">
+    <a class="brand" href="/" aria-label="Neuropulse Inc. home">
+      {{> logo-mark}}
+      <span class="brand__word">Neuro<span class="brand__pulse">pulse</span><span class="brand__inc">Inc.</span></span>
+    </a>
+
+    <nav class="nav" aria-label="Main" data-nav>
+      <span class="nav__indicator" aria-hidden="true" data-nav-indicator></span>
+      <a class="nav__link" href="/#services" data-section="services">Services</a>
+      <a class="nav__link" href="/work" data-section="work" {{nav:work}}>Work</a>
+      <a class="nav__link" href="/#process" data-section="process">Process</a>
+      <a class="nav__link" href="/#about" data-section="about">About</a>
+      <a class="nav__link" href="/#faq" data-section="faq">FAQ</a>
+    </nav>
+
+    <div class="topbar__actions">
+      <a class="icon-btn icon-btn--whatsapp" href="{{site.whatsapp}}" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp, opens in a new tab">{{icon:whatsapp}}</a>
+      <a class="btn btn--primary btn--sm topbar__cta" href="/#contact">Start a project</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-btn>
+        <span class="menu-btn__bars" aria-hidden="true"></span><span class="sr-only">Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- The signal: a live trace that pulses continuously and fills as you scroll. -->
+  <div class="signal" aria-hidden="true">
+    <span class="signal__base"></span>
+    <span class="signal__scan"></span>
+    <span class="signal__progress" data-scroll-progress></span>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" hidden data-mobile-menu>
+    <nav aria-label="Mobile">
+      <a href="/#services">Services</a>
+      <a href="/work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#about">About</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/#contact">Start a project</a>
+    </nav>
+    <div class="mobile-menu__foot">
+      <a href="mailto:{{site.email}}">{{site.email}}</a>
+      <a href="tel:{{site.phoneIntl}}">{{site.phoneDisplay}}</a>
+      {{socials}}
+    </div>
+  </div>
+</header>

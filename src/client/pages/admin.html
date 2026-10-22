@@ -1,0 +1,179 @@
+<!--meta {"title":"Dashboard | Neuropulse Inc.","description":"Neuropulse admin dashboard.","path":"/admin","nav":"admin","noindex":true}-->
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{page.title}}</title>
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{asset:/css/admin.css}}">
+<script type="module" src="{{asset:/js/admin/app.js}}"></script>
+</head>
+<body class="admin">
+
+<!-- Sign in -->
+<main class="login" data-view="login" hidden>
+  <form class="login__card" data-login novalidate>
+    <a class="brand" href="/">{{> logo-mark}}<span class="brand__word">Neuro<span class="brand__pulse">pulse</span></span></a>
+    <h1>Sign in to the dashboard</h1>
+    <div class="field"><label for="l-email">Email</label><input id="l-email" name="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>
+    <p class="form-alert" role="alert" data-login-error hidden></p>
+    <button class="btn btn--primary" type="submit">Sign in</button>
+    <p class="login__hint">Accounts are created with <code>npm run admin:create</code>.</p>
+  </form>
+</main>
+
+<!-- App -->
+<div class="app" data-view="app" hidden>
+  <aside class="side">
+    <a class="brand" href="/" title="View website">{{> logo-mark}}<span class="brand__word">Neuro<span class="brand__pulse">pulse</span></span></a>
+    <nav class="side__nav" aria-label="Dashboard">
+      <button type="button" data-tab="overview" aria-current="page">Overview</button>
+      <button type="button" data-tab="enquiries">Enquiries <span class="badge" data-new-count hidden></span></button>
+      <button type="button" data-tab="projects">Projects</button>
+      <button type="button" data-tab="subscribers">Subscribers</button>
+    </nav>
+    <div class="side__foot">
+      <span class="side__who" data-admin-name></span>
+      <a href="/" target="_blank" rel="noopener">View website</a>
+      <button type="button" class="link" data-logout>Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <!-- Overview -->
+    <section data-panel="overview">
+      <header class="main__head"><h1>Overview</h1></header>
+      <div class="tiles" data-tiles></div>
+      <div class="split">
+        <div class="panel">
+          <h2>Enquiries, last 14 days</h2>
+          <div class="chart" data-chart></div>
+        </div>
+        <div class="panel">
+          <h2>Recent activity</h2>
+          <ul class="activity" data-activity role="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enquiries -->
+    <section data-panel="enquiries" hidden>
+      <header class="main__head">
+        <h1>Enquiries</h1>
+        <a class="btn btn--ghost btn--sm" href="/api/admin/enquiries.csv">Export CSV</a>
+      </header>
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Filter by status" data-status-filter>
+          <button type="button" data-status="" aria-pressed="true">All</button>
+          <button type="button" data-status="new" aria-pressed="false">New</button>
+          <button type="button" data-status="contacted" aria-pressed="false">Contacted</button>
+          <button type="button" data-status="in_progress" aria-pressed="false">In progress</button>
+          <button type="button" data-status="won" aria-pressed="false">Won</button>
+          <button type="button" data-status="lost" aria-pressed="false">Lost</button>
+          <button type="button" data-status="spam" aria-pressed="false">Spam</button>
+        </div>
+        <input class="search" type="search" placeholder="Search name, email, company or reference" aria-label="Search enquiries" data-search>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Received</th><th>Name</th><th>Service</th><th>Budget</th><th>Status</th></tr></thead>
+          <tbody data-enquiry-rows></tbody>
+        </table>
+      </div>
+      <div class="pager" data-pager></div>
+    </section>
+
+    <!-- Projects -->
+    <section data-panel="projects" hidden>
+      <header class="main__head">
+        <h1>Projects</h1>
+        <button class="btn btn--primary btn--sm" type="button" data-new-project>Add project</button>
+      </header>
+      <p class="muted">Published projects appear on the website's "Our work" section. Drafts are only visible here.</p>
+      <div class="project-rows" data-project-rows></div>
+    </section>
+
+    <!-- Subscribers -->
+    <section data-panel="subscribers" hidden>
+      <header class="main__head">
+        <h1>Subscribers</h1>
+        <a class="btn btn--ghost btn--sm" href="/api/admin/subscribers.csv">Export CSV</a>
+      </header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Email</th><th>Status</th><th>Joined</th></tr></thead>
+          <tbody data-subscriber-rows></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Enquiry detail -->
+<dialog class="drawer" data-enquiry-dialog aria-labelledby="enq-title">
+  <form method="dialog" class="drawer__inner" data-enquiry-form>
+    <header class="drawer__head">
+      <div><p class="muted" data-enq-ref></p><h2 id="enq-title" data-enq-name></h2></div>
+      <button class="icon-close" value="cancel" aria-label="Close">&times;</button>
+    </header>
+    <dl class="facts" data-enq-facts></dl>
+    <h3>Project details</h3>
+    <p class="message" data-enq-message></p>
+    <div class="reply" data-enq-reply></div>
+    <div class="field"><label for="enq-status">Status</label>
+      <select id="enq-status" name="status">
+        <option value="new">New</option><option value="contacted">Contacted</option><option value="in_progress">In progress</option>
+        <option value="won">Won</option><option value="lost">Lost</option><option value="spam">Spam</option>
+      </select>
+    </div>
+    <div class="field"><label for="enq-notes">Internal notes</label><textarea id="enq-notes" name="notes" rows="4" maxlength="4000" placeholder="Only visible to admins"></textarea></div>
+    <p class="form-alert" role="alert" data-enq-error hidden></p>
+    <footer class="drawer__foot">
+      <button class="btn btn--danger btn--sm" type="button" data-enq-delete>Delete</button>
+      <button class="btn btn--primary" type="button" data-enq-save>Save changes</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- Project editor -->
+<dialog class="drawer" data-project-dialog aria-labelledby="proj-title">
+  <form class="drawer__inner" data-project-form novalidate>
+    <header class="drawer__head">
+      <h2 id="proj-title" data-proj-title>Add project</h2>
+      <button class="icon-close" type="button" data-close aria-label="Close">&times;</button>
+    </header>
+    <div class="field-row">
+      <div class="field"><label for="p-name">Name</label><input id="p-name" name="name" required maxlength="80"><p class="field-error" data-error-for="name"></p></div>
+      <div class="field"><label for="p-slug">Slug</label><input id="p-slug" name="slug" required maxlength="60" placeholder="my-project"><p class="field-error" data-error-for="slug"></p></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label for="p-client">Client</label><input id="p-client" name="client" maxlength="100"><p class="field-error" data-error-for="client"></p></div>
+      <div class="field"><label for="p-industry">Industry</label><input id="p-industry" name="industry" maxlength="60"><p class="field-error" data-error-for="industry"></p></div>
+    </div>
+    <div class="field"><label for="p-summary">Summary (one line on the card)</label><input id="p-summary" name="summary" required maxlength="200"><p class="field-error" data-error-for="summary"></p></div>
+    <div class="field"><label for="p-description">Description</label><textarea id="p-description" name="description" rows="3" maxlength="3000"></textarea><p class="field-error" data-error-for="description"></p></div>
+    <div class="field"><label for="p-url">Website link</label><input id="p-url" name="url" type="url" placeholder="https://client-site.co.za"><p class="field-error" data-error-for="url"></p></div>
+    <div class="field"><label for="p-image">Screenshot</label><input id="p-image" name="image_url" placeholder="/assets/work/4guard.webp or https://..."><p class="field-error" data-error-for="image_url"></p></div>
+    <div class="field"><label for="p-tech">Tech (comma separated)</label><input id="p-tech" name="tech" placeholder="HTML, CSS, Cloudflare Workers"><p class="field-error" data-error-for="tech"></p></div>
+    <div class="field-row field-row--3">
+      <div class="field"><label for="p-status">Status</label><select id="p-status" name="status"><option value="live">Live</option><option value="in_development">In development</option><option value="coming_soon">Coming soon</option></select></div>
+      <div class="field"><label for="p-order">Order</label><input id="p-order" name="sort_order" type="number" min="0" max="10000" value="100"><p class="field-error" data-error-for="sort_order"></p></div>
+      <div class="field"><label for="p-accent">Cover colour</label><input id="p-accent" name="accent" type="color" value="#1E9BFF"></div>
+    </div>
+    <div class="field"><label for="p-launched">Launch date</label><input id="p-launched" name="launched_at" type="date"><p class="field-error" data-error-for="launched_at"></p></div>
+    <label class="check"><input type="checkbox" name="featured"><span>Feature this project (shown wide, first)</span></label>
+    <label class="check"><input type="checkbox" name="published"><span>Published on the website</span></label>
+    <p class="form-alert" role="alert" data-proj-error hidden></p>
+    <footer class="drawer__foot">
+      <button class="btn btn--danger btn--sm" type="button" data-proj-delete hidden>Delete</button>
+      <button class="btn btn--primary" type="submit">Save project</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+</body>
+</html>

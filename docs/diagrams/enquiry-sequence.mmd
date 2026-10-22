@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor V as Visitor
+    participant B as Browser (brief.js)
+    participant W as Worker /api/enquiries
+    participant D as D1
+    participant R as Resend
+    actor A as Admin
+
+    V->>B: Completes 3-step form
+    B->>B: Validate each step client-side
+    B->>W: POST JSON (Origin header)
+    W->>W: Same-origin check, honeypot check
+    W->>D: UPSERT rate_limits (enquiry:ipHash)
+    D-->>W: count
+    alt over 5 per hour
+        W-->>B: 429 Too many attempts
+    end
+    W->>W: Turnstile verify (if configured)
+    W->>W: validate(enquirySchema)
+    alt invalid
+        W-->>B: 422 + field errors
+        B->>B: Jump to step with first error
+    end
+    W->>D: INSERT enquiries (reference NP-XXXXXX)
+    W-->>B: 201 { reference }
+    B-->>V: Success panel with reference
+    W--)R: waitUntil: send notification email
+    R--)A: "New enquiry NP-XXXXXX"
+    A->>W: Opens /admin, changes status to "contacted"

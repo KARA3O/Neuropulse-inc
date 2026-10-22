@@ -1,0 +1,69 @@
+/* ---- Work showcase ------------------------------------------------------------------------
+   Projects come from /api/projects. A featured project takes a wide row; the rest share
+   a two-column grid. The last tile is always an invitation to become the next project. */
+
+.work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2.5vw, 28px); }
+.section.work--page { padding-top: 16px; }
+
+.project {
+  display: flex; flex-direction: column; border-radius: var(--radius-l); overflow: hidden; position: relative;
+  background: var(--ink-2); border: 1px solid var(--line-dark); transition: border-color .3s;
+}
+.project:hover { border-color: var(--line-dark-strong); }
+.project--featured { grid-column: 1 / -1; flex-direction: row; }
+.project--featured .project__cover { flex: 1.25; aspect-ratio: auto; min-height: 380px; }
+.project--featured .project__body { flex: 1; padding: clamp(24px, 4vw, 48px); justify-content: center; }
+.project--featured .project__name { font-size: var(--step-3); }
+
+.project__cover {
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--ink-3);
+  --accent: var(--pulse);
+}
+.project__cover img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 1.2s var(--ease-out); }
+.project:hover .project__cover img { transform: scale(1.035); }
+
+/* Generated cover when there is no screenshot yet: brand-coloured field with the name set large
+   and a faint circuit grid, so drafts still look intentional. */
+.cover-gen { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 28px; overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) 55%, transparent) 0%, transparent 55%),
+    linear-gradient(160deg, var(--ink-3), var(--ink));
+}
+.cover-gen::before { content: ''; position: absolute; inset: 0; opacity: .35;
+  background-image: linear-gradient(var(--line-dark) 1px, transparent 1px), linear-gradient(90deg, var(--line-dark) 1px, transparent 1px);
+  background-size: 32px 32px; -webkit-mask-image: linear-gradient(200deg, #000, transparent 70%); mask-image: linear-gradient(200deg, #000, transparent 70%);
+}
+.cover-gen span { position: relative; font: 600 clamp(2.5rem, 6vw, 4.5rem)/0.9 var(--font-display); letter-spacing: -0.04em; color: var(--white); opacity: .92; word-break: break-word; }
+
+.project__body { display: flex; flex-direction: column; gap: 12px; padding: 24px; flex: 1; }
+.project__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.project__industry { color: var(--muted-on-dark); font-size: 0.875rem; }
+.project__name { font-size: var(--step-2); }
+.project__client { color: var(--steel); font-size: 0.9375rem; margin: -6px 0 0; }
+.project__summary { color: var(--muted-on-dark); margin: 0; }
+.project__tech { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.project__tech li { font-size: 0.8125rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line-dark-strong); color: var(--mist); }
+.project__actions { margin-top: auto; padding-top: 12px; display: flex; align-items: center; gap: 12px; }
+.project__note { color: var(--muted-on-dark); font-size: 0.875rem; }
+.visit { display: inline-flex; align-items: center; gap: 8px; }
+.visit svg { width: 14px; height: 14px; transition: transform .3s var(--ease-out); }
+.visit:hover svg { transform: translate(2px, -2px); }
+
+.project--invite { border-style: dashed; border-color: var(--line-dark-strong); background: transparent; justify-content: center; padding: clamp(24px, 4vw, 40px); min-height: 280px; }
+.project--invite h3 { font-size: var(--step-2); margin-bottom: 10px; }
+.project--invite p { color: var(--muted-on-dark); max-width: 34ch; }
+
+.work-skeleton { aspect-ratio: 16 / 13; border-radius: var(--radius-l); background: linear-gradient(100deg, var(--ink-2) 40%, var(--ink-3) 50%, var(--ink-2) 60%) 0 0 / 300% 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -150% 0; } }
+.work-empty { grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--muted-on-dark); border: 1px dashed var(--line-dark-strong); border-radius: var(--radius-l); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 36px; }
+.filter { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-dark-strong); background: transparent; color: var(--muted-on-dark); cursor: pointer; font-weight: 500; transition: all .2s; }
+.filter:hover { color: var(--text-on-dark); border-color: var(--steel); }
+.filter[aria-pressed='true'] { background: var(--text-on-dark); color: var(--ink); border-color: var(--text-on-dark); }
+
+@media (max-width: 860px) {
+  .work-grid { grid-template-columns: 1fr; }
+  .project--featured { flex-direction: column; }
+  .project--featured .project__cover { min-height: 0; aspect-ratio: 16 / 10; }
+}

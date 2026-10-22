@@ -1,0 +1,24 @@
+flowchart LR
+    visitor(["Visitor / potential client<br/>(phone or desktop browser)"])
+    admin(["Neuropulse admin<br/>(Karabo / team)"])
+
+    subgraph cf["Cloudflare edge (free plan)"]
+        direction TB
+        assets["Workers Static Assets<br/>HTML · CSS · JS · fonts · images"]
+        worker["Worker: neuropulse-inc<br/>/api/* router + cron"]
+        d1[("D1 database<br/>neuropulse-db (SQLite)")]
+        turnstile["Turnstile<br/>(optional bot check)"]
+    end
+
+    resend["Resend email API<br/>(optional notifications)"]
+    gmail["neuropulse.inc@gmail.com"]
+    socials["X · Instagram · YouTube · Facebook · WhatsApp"]
+
+    visitor -- "GET pages" --> assets
+    visitor -- "fetch /api/projects<br/>POST /api/enquiries" --> worker
+    admin -- "/admin dashboard<br/>(session cookie)" --> worker
+    worker -- "SQL (prepared statements)" --> d1
+    worker -. "verify token" .-> turnstile
+    worker -. "new enquiry email" .-> resend
+    resend -.-> gmail
+    visitor -. "outbound links" .-> socials

@@ -1,0 +1,78 @@
+erDiagram
+    ADMINS ||--o{ SESSIONS : "signs in with"
+    ADMINS ||--o{ AUDIT_LOG : "performs"
+
+    PROJECTS {
+        int id PK
+        text slug UK "url-safe id, e.g. 4guard"
+        text name
+        text client
+        text industry
+        text summary "one line for cards"
+        text description
+        text url "live site for Visit site"
+        text image_url "screenshot"
+        text accent "cover colour"
+        text tech "JSON array"
+        text status "live | in_development | coming_soon"
+        int featured "0/1"
+        int published "0/1 - drafts hidden"
+        int sort_order
+        text launched_at
+        text created_at
+        text updated_at
+    }
+    ENQUIRIES {
+        int id PK
+        text reference UK "NP-XXXXXX"
+        text name
+        text email
+        text phone
+        text company
+        text service
+        text budget
+        text timeline
+        text message
+        text contact_pref "email | phone | whatsapp"
+        text status "new | contacted | in_progress | won | lost | spam"
+        text notes "admin only"
+        text source_page
+        text ip_hash "salted, POPIA-safe"
+        int consent
+        text created_at
+        text updated_at
+    }
+    SUBSCRIBERS {
+        int id PK
+        text email UK
+        text status "active | unsubscribed"
+        text unsubscribe_token UK
+        text created_at
+    }
+    ADMINS {
+        int id PK
+        text email UK
+        text name
+        text password_hash "pbkdf2$sha256$..."
+        text last_login_at
+        text created_at
+    }
+    SESSIONS {
+        text token_hash PK "sha256 of cookie token"
+        int admin_id FK
+        text expires_at
+        text created_at
+    }
+    RATE_LIMITS {
+        text key PK "action:ipHash"
+        int window_start PK
+        int count
+    }
+    AUDIT_LOG {
+        int id PK
+        int admin_id FK
+        text action "e.g. project.publish"
+        text entity
+        text entity_id
+        text created_at
+    }

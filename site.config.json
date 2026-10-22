@@ -1,0 +1,20 @@
+{
+  "name": "Neuropulse Inc.",
+  "shortName": "Neuropulse",
+  "tagline": "Smarter Technology. Brighter Futures.",
+  "motto": "Ideas · Intelligence · Impact",
+  "description": "Neuropulse Inc. designs and builds websites, web applications and business systems for South African businesses.",
+  "url": "https://neuropulse-inc.workers.dev",
+  "country": "South Africa",
+  "region": "Limpopo",
+  "email": "neuropulse.inc@gmail.com",
+  "phoneDisplay": "072 721 6200",
+  "phoneIntl": "+27727216200",
+  "whatsapp": "https://wa.me/27727216200",
+  "socials": [
+    { "id": "x",         "label": "X",         "handle": "@neuropulseinc",  "url": "https://x.com/neuropulseinc" },
+    { "id": "instagram", "label": "Instagram", "handle": "@neuropulse_inc", "url": "https://www.instagram.com/neuropulse_inc" },
+    { "id": "youtube",   "label": "YouTube",   "handle": "@PulseClub-y2n",  "url": "https://www.youtube.com/@PulseClub-y2n" },
+    { "id": "facebook",  "label": "Facebook",  "handle": "NeuroPulse Inc",  "url": "https://www.facebook.com/search/top?q=NeuroPulse%20inc" }
+  ]
+}

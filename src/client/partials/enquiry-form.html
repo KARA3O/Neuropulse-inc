@@ -1,0 +1,114 @@
+<div class="brief" data-brief>
+  <form class="brief__form" novalidate data-brief-form>
+    <div class="brief__progress" aria-hidden="true">
+      <span class="brief__bar"><span data-brief-bar></span></span>
+      <span class="brief__count" data-brief-count>Step 1 of 3</span>
+    </div>
+
+    <!-- Step 1 -->
+    <fieldset class="brief__step" data-step="1">
+      <legend>What do you need?</legend>
+      <div class="choice-grid" role="radiogroup" aria-label="Service">
+        <label class="choice"><input type="radio" name="service" value="Business website" required><span>Business website</span></label>
+        <label class="choice"><input type="radio" name="service" value="Booking or e-commerce system"><span>Booking or online store</span></label>
+        <label class="choice"><input type="radio" name="service" value="Web application"><span>Web application</span></label>
+        <label class="choice"><input type="radio" name="service" value="Android app"><span>Android app</span></label>
+        <label class="choice"><input type="radio" name="service" value="API or database"><span>API or database</span></label>
+        <label class="choice"><input type="radio" name="service" value="Maintenance &amp; hosting"><span>Care and hosting</span></label>
+        <label class="choice choice--wide"><input type="radio" name="service" value="Not sure yet"><span>Not sure yet, I need advice</span></label>
+      </div>
+      <p class="field-error" data-error-for="service"></p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-budget">Budget</label>
+          <select id="f-budget" name="budget">
+            <option value="Not sure yet">Not sure yet</option>
+            <option>Under R5 000</option>
+            <option>R5 000 – R15 000</option>
+            <option>R15 000 – R50 000</option>
+            <option>R50 000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-timeline">When do you need it?</label>
+          <select id="f-timeline" name="timeline">
+            <option>Within 1 month</option>
+            <option>As soon as possible</option>
+            <option>1 – 3 months</option>
+            <option>Just exploring</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Step 2 -->
+    <fieldset class="brief__step" data-step="2" hidden>
+      <legend>Tell us about the project</legend>
+      <div class="field">
+        <label for="f-message">What should it do, and who is it for?</label>
+        <textarea id="f-message" name="message" rows="6" minlength="20" maxlength="4000" required placeholder="For example: We clean offices in Polokwane and want customers to book a cleaning slot online and pay a deposit."></textarea>
+        <div class="field__meta"><p class="field-error" data-error-for="message"></p><span class="counter" data-counter>0 / 4000</span></div>
+      </div>
+      <div class="field">
+        <label for="f-company">Business name <span class="optional">optional</span></label>
+        <input id="f-company" name="company" maxlength="100" autocomplete="organization">
+        <p class="field-error" data-error-for="company"></p>
+      </div>
+    </fieldset>
+
+    <!-- Step 3 -->
+    <fieldset class="brief__step" data-step="3" hidden>
+      <legend>How do we reach you?</legend>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-name">Your name</label>
+          <input id="f-name" name="name" required minlength="2" maxlength="80" autocomplete="name">
+          <p class="field-error" data-error-for="name"></p>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" required maxlength="254" autocomplete="email">
+          <p class="field-error" data-error-for="email"></p>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-phone">Phone <span class="optional">optional</span></label>
+          <input id="f-phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="072 123 4567">
+          <p class="field-error" data-error-for="phone"></p>
+        </div>
+        <div class="field">
+          <span class="label" id="pref-label">Best way to reply</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="pref-label">
+            <label><input type="radio" name="contact_pref" value="email" checked><span>Email</span></label>
+            <label><input type="radio" name="contact_pref" value="whatsapp"><span>WhatsApp</span></label>
+            <label><input type="radio" name="contact_pref" value="phone"><span>Call</span></label>
+          </div>
+        </div>
+      </div>
+      <label class="check">
+        <input type="checkbox" name="consent" required>
+        <span>Neuropulse may store these details to reply to my enquiry, as described in the <a href="/privacy" target="_blank">privacy policy</a>.</span>
+      </label>
+      <p class="field-error" data-error-for="consent"></p>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="turnstile" data-turnstile></div>
+    </fieldset>
+
+    <p class="form-alert" role="alert" data-form-alert hidden></p>
+
+    <div class="brief__nav">
+      <button class="btn btn--ghost" type="button" data-back hidden>Back</button>
+      <button class="btn btn--primary" type="button" data-next>Continue</button>
+      <button class="btn btn--primary" type="submit" data-submit hidden>Send enquiry</button>
+    </div>
+  </form>
+
+  <div class="brief__done" data-brief-done hidden tabindex="-1">
+    <svg class="brief__done-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><path d="M19 33l9 9 17-19"/></svg>
+    <h3>Enquiry sent</h3>
+    <p>Your reference is <strong data-reference>NP-000000</strong>. We will reply within one business day. If it is urgent, WhatsApp us on {{site.phoneDisplay}} and quote the reference.</p>
+    <button class="btn btn--ghost" type="button" data-restart>Send another enquiry</button>
+  </div>
+</div>
