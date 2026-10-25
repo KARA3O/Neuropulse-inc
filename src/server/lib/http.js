@@ -61,6 +61,40 @@ export async function readJson(request, maxBytes = 32_768) {
   }
 }
 
+/** Read a multipart request with a size cap before parsing its fields. */
+export async function readFormData(request, maxBytes) {
+  const type = request.headers.get('content-type') || '';
+  if (!type.toLowerCase().startsWith('multipart/form-data;')) throw new HttpError(415, 'Upload the image as a file.');
+  const declared = Number(request.headers.get('content-length') || 0);
+  if (declared > maxBytes) throw new HttpError(413, 'That upload is too large.');
+  if (!request.body) throw new HttpError(400, 'The uploaded image could not be read.');
+
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) throw new HttpError(413, 'That upload is too large.');
+    chunks.push(value);
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  const headers = new Headers(request.headers);
+  headers.delete('content-length');
+  try {
+    return await new Request(request.url, { method: request.method, headers, body: bytes }).formData();
+  } catch {
+    throw new HttpError(400, 'The uploaded image could not be read.');
+  }
+}
+
 /** Client IP as reported by Cloudflare (falls back to a constant locally). */
 export function clientIp(request) {
   return request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';

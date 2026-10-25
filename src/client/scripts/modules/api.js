@@ -3,12 +3,13 @@
  */
 export async function api(path, { method = 'GET', body, signal } = {}) {
   try {
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
     const res = await fetch(path, {
       method,
       signal,
       credentials: 'same-origin',
-      headers: body ? { 'content-type': 'application/json' } : {},
-      body: body ? JSON.stringify(body) : undefined,
+      headers: body && !isFormData ? { 'content-type': 'application/json' } : {},
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
     const isJson = (res.headers.get('content-type') || '').includes('application/json');
     const data = isJson ? await res.json() : {};

@@ -156,7 +156,16 @@
     <div class="field"><label for="p-summary">Summary (one line on the card)</label><input id="p-summary" name="summary" required maxlength="200"><p class="field-error" data-error-for="summary"></p></div>
     <div class="field"><label for="p-description">Description</label><textarea id="p-description" name="description" rows="3" maxlength="3000"></textarea><p class="field-error" data-error-for="description"></p></div>
     <div class="field"><label for="p-url">Website link</label><input id="p-url" name="url" type="url" placeholder="https://client-site.co.za"><p class="field-error" data-error-for="url"></p></div>
-    <div class="field"><label for="p-image">Screenshot</label><input id="p-image" name="image_url" placeholder="/assets/work/4guard.webp or https://..."><p class="field-error" data-error-for="image_url"></p></div>
+    <div class="field">
+      <label for="p-image">Screenshot</label>
+      <input id="p-image" name="image_url" placeholder="/assets/work/4guard.webp or https://...">
+      <p class="muted field-hint">Paste an image URL or upload a JPEG, PNG or WebP (up to 5 MB).</p>
+      <label class="btn btn--ghost btn--sm image-upload__button" for="p-image-file">Upload photo</label>
+      <input class="sr-only" id="p-image-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload project screenshot">
+      <p class="muted field-hint" data-image-upload-status role="status" aria-live="polite"></p>
+      <img class="project-image-preview" data-image-preview alt="Project screenshot preview" hidden>
+      <p class="field-error" data-error-for="image_url"></p>
+    </div>
     <div class="field"><label for="p-tech">Tech (comma separated)</label><input id="p-tech" name="tech" placeholder="HTML, CSS, Cloudflare Workers"><p class="field-error" data-error-for="tech"></p></div>
     <div class="field-row field-row--3">
       <div class="field"><label for="p-status">Status</label><select id="p-status" name="status"><option value="live">Live</option><option value="in_development">In development</option><option value="coming_soon">Coming soon</option></select></div>

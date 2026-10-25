@@ -114,6 +114,10 @@ code { font-size: .875em; background: var(--ink-3); padding: 2px 6px; border-rad
 .message { white-space: pre-wrap; background: var(--ink); border: 1px solid var(--line-dark); border-radius: var(--radius-s); padding: 14px; margin: 0; }
 .reply { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .field-row--3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-hint { margin: 0; font-size: .8125rem; }
+.field-hint.is-error { color: var(--danger); }
+.image-upload__button { align-self: flex-start; cursor: pointer; }
+.project-image-preview { width: 100%; max-height: 220px; object-fit: contain; object-position: left center; border: 1px solid var(--line-dark); border-radius: var(--radius-s); background: var(--ink); }
 input[type='color'] { padding: 4px !important; height: 48px; cursor: pointer; }
 .btn--danger { --btn-bd: rgba(255, 107, 107, .4); --btn-fg: #FF9B9B; }
 .btn--danger:hover { --btn-bg: rgba(255, 107, 107, .12); }

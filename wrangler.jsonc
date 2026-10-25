@@ -17,7 +17,7 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/media/*"]
   },
 
   // D1 (SQLite at the edge). The site's code uses the binding name "DB": keep exactly one entry.
@@ -27,6 +27,14 @@
       "database_name": "neuropulse-db",
       "database_id": "f22aca58-b1c6-454d-ac2a-f04880c1c56f",
       "migrations_dir": "migrations"
+    }
+  ],
+
+  // Uploaded project screenshots are served publicly from this bucket.
+  "r2_buckets": [
+    {
+      "binding": "PROJECT_IMAGES",
+      "bucket_name": "neuropulse-project-images"
     }
   ],
 

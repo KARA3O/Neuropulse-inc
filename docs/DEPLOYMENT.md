@@ -41,7 +41,17 @@ Copy the `database_id` into `wrangler.jsonc`, replacing `REPLACE_WITH_YOUR_D1_DA
 npm run db:migrate:remote
 ```
 
-## 4. Set the secrets
+## 4. Create project image storage
+
+Project screenshot uploads use a public-read Worker route backed by a private R2 bucket:
+
+```bash
+npx wrangler r2 bucket create neuropulse-project-images
+```
+
+The `PROJECT_IMAGES` binding is already configured in `wrangler.jsonc`. If deploying with GitHub Actions, the Cloudflare API token also needs **Workers Scripts: Edit** and **R2 Storage: Edit** permissions.
+
+## 5. Set the secrets
 
 ```bash
 npx wrangler secret put IP_SALT
@@ -55,7 +65,7 @@ npx wrangler secret put RESEND_API_KEY         # email alerts for new enquiries
 npx wrangler secret put TURNSTILE_SECRET_KEY   # bot protection
 ```
 
-## 5. Deploy
+## 6. Deploy
 
 ```bash
 npm run deploy
@@ -69,7 +79,7 @@ https://neuropulse-inc.<your-subdomain>.workers.dev
 
 Open it, then update `SITE_URL` in `wrangler.jsonc` and `url` in `site.config.json` to that address (or your domain) and deploy again, so emails, the sitemap and social previews use the right link.
 
-## 6. Create your admin account
+## 7. Create your admin account
 
 ```bash
 npm run admin:create -- --email neuropulse.inc@gmail.com --name "Karabo" --remote
@@ -77,7 +87,7 @@ npm run admin:create -- --email neuropulse.inc@gmail.com --name "Karabo" --remot
 
 Then sign in at `https://YOUR-URL/admin`.
 
-## 7. Check it works
+## 8. Check it works
 
 ```bash
 BASE_URL=https://YOUR-URL ADMIN_EMAIL=neuropulse.inc@gmail.com ADMIN_PASSWORD='your-password' npm run test:smoke
@@ -116,7 +126,7 @@ The smoke test creates and deletes a test enquiry and a test project. Run it rig
 
 `.github/workflows/deploy.yml` runs the tests on every push and pull request, and deploys `main` to Cloudflare.
 
-1. Cloudflare dashboard → **My Profile → API Tokens → Create token** → template **Edit Cloudflare Workers**. Also give it **D1: Edit**.
+1. Cloudflare dashboard → **My Profile → API Tokens → Create token** → template **Edit Cloudflare Workers**. Also give it **D1: Edit** and **R2 Storage: Edit**.
 2. GitHub repo → **Settings → Secrets and variables → Actions** → add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (shown on the Workers dashboard).
 3. Push to `main`.
 

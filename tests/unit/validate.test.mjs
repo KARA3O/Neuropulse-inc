@@ -48,6 +48,7 @@ test('project slug and url rules', () => {
   assert.throws(() => validate({ name: 'X Co', slug: 'x-co', summary: 'Long enough summary', status: 'live', url: 'javascript:alert(1)' }, projectSchema));
   const ok = validate({ name: 'X Co', slug: 'x-co', summary: 'Long enough summary', status: 'live', tech: 'HTML, CSS' }, projectSchema);
   assert.deepEqual(ok.tech, ['HTML', 'CSS']);
+  assert.equal(validate({ name: 'X Co', slug: 'x-co', summary: 'Long enough summary', status: 'live', image_url: '/media/projects/123e4567-e89b-12d3-a456-426614174000.jpg' }, projectSchema).image_url, '/media/projects/123e4567-e89b-12d3-a456-426614174000.jpg');
 });
 
 test('isEmail', () => {

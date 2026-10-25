@@ -12,7 +12,7 @@ const PROJECT_STATUS = { live: 'Live', in_development: 'In development', coming_
 const fmtDate = (iso) => new Date(iso).toLocaleString('en-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const fmtDay = (iso) => new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 
-const state = { tab: 'overview', enquiries: { status: '', q: '', offset: 0, limit: 25 }, projects: [], currentEnquiry: null, currentProject: null };
+const state = { tab: 'overview', enquiries: { status: '', q: '', offset: 0, limit: 25 }, projects: [], currentEnquiry: null, currentProject: null, uploadingImage: false };
 
 // ---- toast ------------------------------------------------------------------------------------
 let toastTimer;
@@ -212,6 +212,8 @@ function openProject(project) {
   $('[data-proj-error]', dlg).hidden = true;
   $('[data-proj-title]', dlg).textContent = project ? `Edit ${project.name}` : 'Add project';
   $('[data-proj-delete]', dlg).hidden = !project;
+  $('[data-image-upload-status]', dlg).textContent = '';
+  $('[data-image-upload-status]', dlg).classList.remove('is-error');
   if (project) {
     for (const [k, v] of Object.entries(project)) {
       const el = form.elements[k];
@@ -221,7 +223,49 @@ function openProject(project) {
       else el.value = v ?? '';
     }
   }
+  updateProjectImagePreview(form.elements.image_url.value);
   dlg.showModal();
+}
+
+function updateProjectImagePreview(url) {
+  const preview = $('[data-image-preview]');
+  preview.hidden = !url;
+  if (url) preview.src = url;
+  else preview.removeAttribute('src');
+}
+
+async function uploadProjectImage(file) {
+  const form = $('[data-project-form]');
+  const input = $('#p-image-file');
+  const submit = form.querySelector('button[type="submit"]');
+  const status = $('[data-image-upload-status]');
+  const body = new FormData();
+  body.append('image', file);
+  state.uploadingImage = true;
+  input.disabled = true;
+  submit.disabled = true;
+  $('[data-project-dialog] [data-close]').disabled = true;
+  $('[data-proj-delete]').disabled = true;
+  status.textContent = 'Uploading screenshot…';
+  try {
+    const { ok, data } = await call('/api/admin/projects/image', { method: 'POST', body });
+    if (!ok) {
+      status.textContent = data.error || 'The screenshot could not be uploaded.';
+      status.classList.add('is-error');
+      return;
+    }
+    form.elements.image_url.value = data.image_url;
+    updateProjectImagePreview(data.image_url);
+    status.textContent = 'Screenshot uploaded.';
+    status.classList.remove('is-error');
+  } finally {
+    state.uploadingImage = false;
+    input.disabled = false;
+    submit.disabled = false;
+    $('[data-project-dialog] [data-close]').disabled = false;
+    $('[data-proj-delete]').disabled = false;
+    input.value = '';
+  }
 }
 
 async function saveProject(ev) {
@@ -307,6 +351,23 @@ function wire() {
   $('[data-new-project]').addEventListener('click', () => openProject(null));
   $('[data-project-form]').addEventListener('submit', saveProject);
   $('[data-project-dialog] [data-close]').addEventListener('click', () => $('[data-project-dialog]').close());
+  $('[data-project-dialog]').addEventListener('cancel', (ev) => {
+    if (state.uploadingImage) ev.preventDefault();
+  });
+  $('#p-image').addEventListener('input', (ev) => updateProjectImagePreview(ev.target.value.trim()));
+  $('[data-image-preview]').addEventListener('error', (ev) => { ev.currentTarget.hidden = true; });
+  $('#p-image-file').addEventListener('change', async (ev) => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    const status = $('[data-image-upload-status]');
+    status.classList.remove('is-error');
+    try {
+      await uploadProjectImage(file);
+    } catch (err) {
+      status.textContent = err.message || 'The screenshot could not be uploaded.';
+      status.classList.add('is-error');
+    }
+  });
   const nameInput = $('#p-name');
   nameInput.addEventListener('input', () => {
     if (!state.currentProject) $('#p-slug').value = nameInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

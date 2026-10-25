@@ -17,7 +17,8 @@
  *   GET    /api/admin/subscribers        list
  *   GET    /api/admin/subscribers.csv    export
  */
-import { clientIp, csvResponse, HttpError, json, readJson } from '../lib/http.js';
+import { clientIp, csvResponse, HttpError, json, readFormData, readJson } from '../lib/http.js';
+import { getProjectImageFormat, MAX_PROJECT_IMAGE_BYTES, MAX_PROJECT_IMAGE_REQUEST_BYTES } from '../lib/project-images.js';
 import { enquiryUpdateSchema, ENQUIRY_STATUSES, loginSchema, projectSchema, validate } from '../lib/validate.js';
 import { hashIp } from '../lib/crypto.js';
 import { readCookie, requireAdmin, SESSION_COOKIE, sessionCookie } from '../middleware/auth.js';
@@ -107,6 +108,30 @@ export function registerAdminRoutes(r) {
 
   // ---- Projects -----------------------------------------------------------------------------
   r.get('/api/admin/projects', guarded(async ({ env }) => json({ ok: true, projects: await listAll(env.DB) })));
+
+  r.post('/api/admin/projects/image', guarded(async ({ request, env }) => {
+    if (!env.PROJECT_IMAGES) throw new HttpError(503, 'Project image storage is not configured. Check the R2 binding.');
+    const form = await readFormData(request, MAX_PROJECT_IMAGE_REQUEST_BYTES);
+    const files = form.getAll('image');
+    const image = files[0];
+    if (files.length !== 1 || typeof image === 'string' || !image) {
+      throw new HttpError(422, 'Choose one image to upload.', { image: 'Choose one image to upload.' });
+    }
+    if (image.size === 0) throw new HttpError(422, 'The selected image is empty.', { image: 'Choose a non-empty image.' });
+    if (image.size > MAX_PROJECT_IMAGE_BYTES) throw new HttpError(413, 'Images must be 5 MB or smaller.');
+
+    const bytes = new Uint8Array(await image.arrayBuffer());
+    const format = getProjectImageFormat(image.type, bytes);
+    const filename = `${crypto.randomUUID()}.${format.extension}`;
+    const key = `projects/${filename}`;
+    await env.PROJECT_IMAGES.put(key, bytes, {
+      httpMetadata: {
+        contentType: format.contentType,
+        cacheControl: 'public, max-age=31536000, immutable',
+      },
+    });
+    return json({ ok: true, image_url: `/media/projects/${filename}` }, 201);
+  }));
 
   r.post('/api/admin/projects', guarded(async ({ env, request, admin }) => {
     const data = validate(await readJson(request), projectSchema);

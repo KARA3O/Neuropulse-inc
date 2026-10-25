@@ -39,6 +39,21 @@ export function registerPublicRoutes(r) {
     return cachedJson({ ok: true, project }, 60);
   });
 
+  r.get('/media/projects/:filename', async ({ env, params }) => {
+    if (!/^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}\.(?:jpg|png|webp)$/i.test(params.filename)) {
+      throw new HttpError(404, 'That image does not exist.');
+    }
+    if (!env.PROJECT_IMAGES) throw new HttpError(503, 'Project image storage is not configured. Check the R2 binding.');
+    const image = await env.PROJECT_IMAGES.get(`projects/${params.filename}`);
+    if (!image) throw new HttpError(404, 'That image does not exist.');
+    const headers = new Headers();
+    image.writeHttpMetadata(headers);
+    headers.set('cache-control', 'public, max-age=31536000, immutable');
+    headers.set('etag', image.httpEtag);
+    headers.set('x-content-type-options', 'nosniff');
+    return new Response(image.body, { headers });
+  });
+
   r.post('/api/enquiries', async (ctx) => {
     const { request, env } = ctx;
     const body = await readJson(request);

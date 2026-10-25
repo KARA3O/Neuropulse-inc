@@ -104,10 +104,12 @@ All admin routes except `login` require the `np_session` cookie, which is set by
 | POST | `/api/admin/projects` | project fields | `201 { project }` |
 | PATCH | `/api/admin/projects/:id` | any project fields | `{ project }` |
 | DELETE | `/api/admin/projects/:id` | | |
+| POST | `/api/admin/projects/image` | multipart file field `image` (JPEG, PNG or WebP; ≤ 5 MB) | `201 { image_url }` |
+| GET | `/media/projects/:filename` | | Public project screenshot |
 | GET | `/api/admin/subscribers` | | `{ subscribers }` |
 | GET | `/api/admin/subscribers.csv` | | CSV download |
 
-**Project fields:** `name`\*, `slug`\*, `summary`\*, `status`\* (`live`/`in_development`/`coming_soon`), `client`, `industry`, `description`, `url` (https), `image_url` (`https://…` or `/assets/…`), `accent` (`#RRGGBB`), `tech` (array or comma list, ≤ 12), `featured`, `published`, `sort_order` (0–10000), `launched_at` (`YYYY-MM-DD`). \* = required on create.
+**Project fields:** `name`\*, `slug`\*, `summary`\*, `status`\* (`live`/`in_development`/`coming_soon`), `client`, `industry`, `description`, `url` (https), `image_url` (`https://…`, `/assets/…` or an uploaded `/media/projects/…` image), `accent` (`#RRGGBB`), `tech` (array or comma list, ≤ 12), `featured`, `published`, `sort_order` (0–10000), `launched_at` (`YYYY-MM-DD`). \* = required on create.
 
 ### Examples (curl)
 

@@ -132,7 +132,7 @@ export const projectSchema = {
   summary: { required: true, min: 10, max: 200, label: 'Summary' },
   description: { max: 3000, label: 'Description' },
   url: { url: true, max: 300, label: 'Website link' },
-  image_url: { max: 300, pattern: /^(https:\/\/|\/assets\/)/, patternMessage: 'Use an https:// link or a path starting with /assets/.', label: 'Screenshot' },
+  image_url: { max: 300, pattern: /^(https:\/\/|\/assets\/|\/media\/projects\/)/, patternMessage: 'Use an https:// link, a path starting with /assets/, or an uploaded image.', label: 'Screenshot' },
   accent: { pattern: /^#[0-9a-fA-F]{6}$/, patternMessage: 'Use a hex colour like #1E9BFF.', default: '#1E9BFF', label: 'Accent colour' },
   tech: { type: 'array', max: 12, default: [], label: 'Tech' },
   status: { required: true, enum: PROJECT_STATUSES, label: 'Status' },

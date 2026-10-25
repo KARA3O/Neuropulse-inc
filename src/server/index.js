@@ -25,13 +25,15 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (!url.pathname.startsWith('/api/')) {
+    if (!url.pathname.startsWith('/api/') && !url.pathname.startsWith('/media/')) {
       return env.ASSETS.fetch(request);
     }
 
     try {
-      if (!env.DB) throw new HttpError(503, 'The database is not connected. Check the D1 binding in wrangler.jsonc.');
-      assertSameOrigin(request, url);
+      if (url.pathname.startsWith('/api/')) {
+        if (!env.DB) throw new HttpError(503, 'The database is not connected. Check the D1 binding in wrangler.jsonc.');
+        assertSameOrigin(request, url);
+      }
       const { handler, params } = router.match(request.method, url.pathname);
       return await handler({ request, env, url, params, waitUntil: (p) => ctx.waitUntil(p) });
     } catch (err) {
