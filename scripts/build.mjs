@@ -30,7 +30,7 @@ const OUT = join(root, 'public');
 const site = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
 
 const CSS_BUNDLES = {
-  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css'],
+  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css', 'founder.css'],
   'css/admin.css': ['tokens.css', 'base.css', 'components.css', 'admin.css'],
 };
 

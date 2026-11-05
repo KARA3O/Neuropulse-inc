@@ -1,6 +1,6 @@
 {
   "name": "neuropulse-inc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Neuropulse Inc. company website: showcase, project enquiries and admin dashboard on Cloudflare Workers + D1.",
   "private": true,
   "type": "module",

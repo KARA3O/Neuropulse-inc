@@ -123,7 +123,7 @@ neuropulse-inc/
 │   │   └── lib/                  http.js · validate.js · crypto.js    (pure helpers)
 │   │
 │   └── client/                   ── Website (front end source) ──
-│       ├── pages/                index · work · privacy · 404 · admin
+│       ├── pages/                index · work · founder · privacy · 404 · admin
 │       ├── partials/             head · header · footer · logo-mark · enquiry-form
 │       ├── styles/               tokens · base · header · components · home · work · admin
 │       ├── scripts/              main.js + modules/ (topbar, hero, work, brief, …) + admin/app.js
