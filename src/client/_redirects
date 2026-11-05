@@ -1,0 +1,4 @@
+# Short links printed on business cards and posters. Change the destination here and
+# every printed QR code follows it; never delete these two lines once cards are printed.
+/card    /founder    302
+/poster  /#contact   302

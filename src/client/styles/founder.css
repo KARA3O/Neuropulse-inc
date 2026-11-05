@@ -1,0 +1,80 @@
+/* ---- Founder page --------------------------------------------------------------------------
+   Built from the same pieces as the rest of the site: page hero, ink/paper sections,
+   the services and about grids, pills and project tech chips. */
+
+.founder__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px clamp(40px, 6vw, 96px); align-items: center; }
+
+/* Portrait: rounded like the project cards, with a faint circuit grid and a pulse glow behind. */
+.founder__photo { position: relative; margin: 0; border-radius: var(--radius-l); overflow: hidden; background: var(--ink-3); border: 1px solid var(--line-dark-strong); isolation: isolate; }
+.founder__photo::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(10, 12, 16, .75) 100%);
+}
+.founder__photo::after { /* thin brand line along the top edge */
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; z-index: 2; background: var(--brand-gradient);
+}
+.founder__photo img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; object-position: center 20%; }
+.founder__photo figcaption { position: absolute; left: 20px; bottom: 20px; z-index: 2; }
+.founder__photo .pill--live { background: rgba(10, 12, 16, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+.founder__role { color: var(--pulse-hi); font-weight: 500; margin-bottom: 14px; letter-spacing: .02em; }
+.founder__intro .page-hero__title { margin-bottom: 20px; }
+.founder__stats { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 36px 0; padding-top: 24px; border-top: 1px solid var(--line-dark); }
+.founder__stats li { color: var(--muted-on-dark); font-size: 0.9375rem; display: flex; flex-direction: column; }
+.founder__stats strong { color: var(--text-on-dark); font: 600 1.0625rem/1.3 var(--font-display); }
+.founder__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.founder-story__text p { color: var(--muted-on-light); font-size: var(--step-1); line-height: 1.55; max-width: 56ch; }
+.founder-story__text p:first-child { color: var(--text-on-light); }
+
+/* Journey: a vertical signal line with a node per milestone. */
+.timeline { position: relative; display: grid; gap: 0; }
+.timeline::before { content: ''; position: absolute; left: 11rem; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--pulse), var(--line-dark) 60%); }
+.timeline__item { position: relative; display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 0 40px; padding: 22px 0; border-bottom: 1px solid var(--line-dark); }
+.timeline__item:last-child { border-bottom: 0; }
+.timeline__item::before { content: ''; position: absolute; left: calc(11rem - 4px); top: 30px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); border: 1.5px solid var(--steel); }
+.timeline__item--win::before { border-color: var(--pulse-hi); background: var(--pulse-hi); box-shadow: 0 0 10px var(--pulse-hi); }
+.timeline__date { color: var(--steel); font-size: 0.9375rem; padding-top: 2px; padding-right: 24px; font-variant-numeric: tabular-nums; }
+.timeline__item h3 { font-size: var(--step-1); margin-bottom: 6px; }
+.timeline__item--win h3 { color: var(--pulse-hi); }
+.timeline__item p { color: var(--muted-on-dark); margin: 0; max-width: 60ch; }
+
+/* Skills and builds */
+.skill-groups { margin: 0; border-top: 1px solid var(--line-light); }
+.skill-groups > div { display: grid; grid-template-columns: 9rem 1fr; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line-light); }
+.skill-groups dt { font: 600 1.0625rem/1.4 var(--font-display); }
+.skill-groups dd { margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { font-size: 0.8125rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line-light); color: var(--muted-on-light); background: var(--white); }
+
+.built-list { border-top: 1px solid var(--line-light); }
+.built-list a { display: flex; flex-direction: column; gap: 2px; padding: 18px 40px 18px 0; border-bottom: 1px solid var(--line-light); text-decoration: none; position: relative; transition: color .2s; }
+.built-list a::after { content: '↗'; position: absolute; right: 4px; top: 18px; color: var(--deep); transition: transform .3s var(--ease-out); }
+.built-list a:hover strong { color: var(--deep); }
+.built-list a:hover::after { transform: translate(2px, -2px); }
+.built-list strong { font: 600 1.125rem/1.35 var(--font-display); transition: color .2s; }
+.built-list span { color: var(--muted-on-light); font-size: 0.9375rem; }
+
+.founder-cta { text-align: center; background: radial-gradient(700px 360px at 50% 120%, rgba(30, 155, 255, .16), transparent 70%), var(--ink); }
+.founder-cta .h-section { margin-inline: auto; max-width: 22ch; }
+.founder-cta p { color: var(--muted-on-dark); font-size: var(--step-1); max-width: 46ch; margin: 0 auto 32px; }
+.founder-cta .founder__actions { justify-content: center; }
+
+/* Home page link into this page */
+.about__founder { display: flex; align-items: center; gap: 14px; margin-top: 28px; text-decoration: none; width: fit-content; }
+.about__founder img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-dark-strong); }
+.about__founder span { display: flex; flex-direction: column; color: var(--muted-on-dark); font-size: 0.9375rem; }
+.about__founder strong { color: var(--pulse); font-weight: 500; }
+.about__founder:hover strong { color: var(--pulse-hi); }
+
+@media (max-width: 900px) {
+  .founder__grid { grid-template-columns: 1fr; }
+  .founder__photo { max-width: 440px; }
+}
+@media (max-width: 640px) {
+  .timeline::before { left: 4px; }
+  .timeline__item { grid-template-columns: 1fr; padding-left: 28px; }
+  .timeline__item::before { left: 0; top: 28px; }
+  .timeline__date { padding: 0 0 6px; }
+  .skill-groups > div { grid-template-columns: 1fr; gap: 8px; }
+}

@@ -117,7 +117,9 @@
 .mobile-menu nav a:nth-child(3) { animation-delay: .08s; }
 .mobile-menu nav a:nth-child(4) { animation-delay: .12s; }
 .mobile-menu nav a:nth-child(5) { animation-delay: .16s; }
-.mobile-menu nav a:nth-child(6) { animation-delay: .2s; color: var(--pulse); }
+.mobile-menu nav a:nth-child(6) { animation-delay: .2s; }
+.mobile-menu nav a:nth-child(7) { animation-delay: .24s; }
+.mobile-menu nav a:last-child { color: var(--pulse); }
 @keyframes menu-in { to { opacity: 1; transform: none; } }
 .mobile-menu__foot { display: flex; flex-direction: column; gap: 10px; margin-top: 32px; color: var(--muted-on-dark); }
 .mobile-menu__foot a { text-decoration: none; }

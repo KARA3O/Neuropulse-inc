@@ -30,7 +30,7 @@ const OUT = join(root, 'public');
 const site = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
 
 const CSS_BUNDLES = {
-  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css'],
+  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css', 'founder.css'],
   'css/admin.css': ['tokens.css', 'base.css', 'components.css', 'admin.css'],
 };
 
@@ -71,7 +71,7 @@ function main() {
   // 1. Assets and scripts are copied as-is.
   cpSync(join(SRC, 'assets'), join(OUT, 'assets'), { recursive: true });
   cpSync(join(SRC, 'scripts'), join(OUT, 'js'), { recursive: true });
-  for (const f of ['_headers', 'robots.txt', 'site.webmanifest']) {
+  for (const f of ['_headers', '_redirects', 'robots.txt', 'site.webmanifest']) {
     if (existsSync(join(SRC, f))) cpSync(join(SRC, f), join(OUT, f));
   }
 

@@ -17,6 +17,7 @@ onReady(async () => {
   if (has('[data-steps]')) tasks.push(import('./modules/steps.js').then((m) => m.initSteps()));
   if (has('[data-brief]')) tasks.push(import('./modules/brief.js').then((m) => m.initBrief()));
   if (has('[data-subscribe]')) tasks.push(import('./modules/subscribe.js').then((m) => m.initSubscribe()));
+  if (has('[data-wordmark]')) tasks.push(import('./modules/wordmark.js').then((m) => m.initWordmark()));
   if (has('[data-accordion]')) tasks.push(import('./modules/accordion.js').then((m) => m.initAccordion()));
   await Promise.allSettled(tasks);
 });

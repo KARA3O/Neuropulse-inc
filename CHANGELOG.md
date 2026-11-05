@@ -2,6 +2,13 @@
 
 All notable changes to this project. Format: [Keep a Changelog](https://keepachangelog.com), versioning: [SemVer](https://semver.org).
 
+## [1.1.0] - 2026-11-05
+
+### Added
+- `/founder` page introducing Karabo Thindisa: portrait, story, journey timeline, skills and past builds, linked from the top bar, footer and home About section
+- `/card` and `/poster` short links (in `src/client/_redirects`) used by the printed QR codes
+- Halftone "neuropulse" wordmark at the bottom of the footer: brand-gradient dots that part around the pointer and pulse on click (static under reduced motion)
+
 ## [1.0.0] - 2026-10-22
 
 ### Added
