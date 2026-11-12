@@ -2,7 +2,7 @@
  * Data access for showcase projects.
  */
 
-const PUBLIC_COLUMNS = 'slug, name, client, industry, summary, description, url, image_url, accent, tech, status, featured, launched_at';
+const PUBLIC_COLUMNS = 'slug, name, client, industry, summary, description, problem, solution, results, url, image_url, accent, tech, status, featured, launched_at';
 
 /** Convert a DB row into the API shape (JSON tech array, real booleans). */
 export function toProject(row) {
@@ -41,7 +41,7 @@ export async function slugTaken(db, slug, exceptId = 0) {
   return !!(await db.prepare('SELECT 1 FROM projects WHERE slug = ?1 AND id != ?2').bind(slug, exceptId).first());
 }
 
-const WRITABLE = ['slug', 'name', 'client', 'industry', 'summary', 'description', 'url', 'image_url', 'accent', 'tech', 'status', 'featured', 'published', 'sort_order', 'launched_at'];
+const WRITABLE = ['slug', 'name', 'client', 'industry', 'summary', 'description', 'problem', 'solution', 'results', 'url', 'image_url', 'accent', 'tech', 'status', 'featured', 'published', 'sort_order', 'launched_at'];
 
 function toDbValue(key, value) {
   if (key === 'tech') return JSON.stringify(value ?? []);

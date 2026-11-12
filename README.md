@@ -24,6 +24,13 @@ It runs entirely on **Cloudflare Workers + D1**, which is free at our scale.
 - **Our work** showcase loaded from the database, with status pills (Live / In development / Coming soon) and **Visit site** buttons that open client sites in a new tab; filterable `/work` page
 - Three-step **Start a project** form with per-step validation, a saved draft, a reference number (e.g. `NP-7K3QX2`), honeypot and optional Cloudflare Turnstile
 - WhatsApp, call and email channels, social links with logos (X, Instagram, YouTube, Facebook)
+- **Showreel**: the Neuropulse advert video on the home page, with a written transcript
+- **Instant estimate**: visitors pick a service and add-ons, see a typical timeline (and a price range once you enter your prices in `site.config.json`), and send the choices with their enquiry
+- **Case-study pages** at `/work/<slug>`, rendered by the Worker so Google reads the text, with challenge / what we built / result sections that only appear when they have text
+- **Testimonials**: real client quotes, shown on the home page and the project's case study (the section stays hidden until you publish one)
+- **Book a free 30-minute call**: live availability in South African working hours, no double bookings, confirmation email with a calendar file and a cancel link
+- **Automatic reply** to every enquiry with the reference number and WhatsApp / call buttons (needs a verified sender domain, see `docs/DEPLOYMENT.md`)
+- **Lead source tracking**: "How did you hear about us?" plus `?utm_source=` link tags, shown in the dashboard and CSV
 - Newsletter sign-up with one-click unsubscribe
 - POPIA privacy policy, custom 404, SEO (meta, Open Graph, JSON-LD, sitemap, robots), web manifest
 - Self-hosted brand fonts (Outfit, DM Sans), so no Google Fonts and no tracking
@@ -31,13 +38,19 @@ It runs entirely on **Cloudflare Workers + D1**, which is free at our scale.
 **Admin dashboard (`/admin`)**
 - Overview: new enquiries, 7/30-day counts, win rate, live projects, subscribers, 14-day chart, audit trail
 - Enquiries: filter by status, search, detail drawer, status + internal notes, reply by email/WhatsApp/call, CSV export, delete (POPIA erasure)
-- Projects: add/edit/delete, publish toggle, feature, ordering, screenshots, cover colour
+- Projects: add/edit/delete, publish toggle, feature, ordering, screenshots, cover colour, case-study text
+- Calls: upcoming and recent discovery calls, mark completed / no-show / cancelled
+- Testimonials: add, edit, publish, delete
+- Lead sources chart on the overview (last 90 days)
+- Security: optional two-factor sign-in (authenticator app)
 - Subscribers list + CSV export
 
 **Engineering**
 - Layered Worker: routes → services → repositories, with all SQL in repositories
 - PBKDF2 password hashing, hashed session tokens, HttpOnly/SameSite=Strict cookies, CSRF origin check, rate limiting, CSP and security headers, salted IP hashes
-- Daily cron cleans expired sessions and rate-limit rows
+- Daily cron cleans expired sessions and rate-limit rows, and applies the 24-month retention rule from the privacy policy (clients with status "won" are kept)
+- Email alert to you when the site hits a server error (at most one every 15 minutes)
+- Optional cookie-free Cloudflare Web Analytics (paste the token in `site.config.json`)
 - Unit tests (`node:test`) and an end-to-end smoke test
 
 ---

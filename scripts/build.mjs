@@ -23,6 +23,7 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { HEARD_FROM } from '../src/server/lib/validate.js'; // one list for the form and the server check
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(root, 'src/client');
@@ -30,7 +31,7 @@ const OUT = join(root, 'public');
 const site = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
 
 const CSS_BUNDLES = {
-  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css', 'founder.css'],
+  'css/site.css': ['tokens.css', 'base.css', 'header.css', 'components.css', 'home.css', 'work.css', 'founder.css', 'growth.css'],
   'css/admin.css': ['tokens.css', 'base.css', 'components.css', 'admin.css'],
 };
 
@@ -63,6 +64,16 @@ function socialsHtml() {
     .join('')}</ul>`;
 }
 
+/** Cloudflare Web Analytics beacon (cookie-free), only when a token is set in site.config.json. */
+function analyticsHtml() {
+  const token = site.analytics?.cloudflareToken;
+  if (!token) return '';
+  if (!/^[a-f0-9]{32}$/i.test(token)) throw new Error('site.config.json: analytics.cloudflareToken should be the 32-character token from Cloudflare Web Analytics.');
+  return `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token })}'></script>`;
+}
+
+const heardFromOptions = () => HEARD_FROM.map((o) => `<option>${esc(o)}</option>`).join('');
+
 function main() {
   const started = Date.now();
   rmSync(OUT, { recursive: true, force: true });
@@ -74,6 +85,8 @@ function main() {
   for (const f of ['_headers', '_redirects', 'robots.txt', 'site.webmanifest']) {
     if (existsSync(join(SRC, f))) cpSync(join(SRC, f), join(OUT, f));
   }
+  // The "instant estimate" section reads its choices (and your prices, once you add them) from here.
+  if (site.estimator) writeFileSync(join(OUT, 'estimator.json'), JSON.stringify(site.estimator, (k, v) => (k.startsWith('_') ? undefined : v)));
 
   // 2. CSS bundles.
   for (const [out, parts] of Object.entries(CSS_BUNDLES)) {
@@ -124,6 +137,8 @@ function main() {
 
     html = html
       .replace(/\{\{socials\}\}/g, socialsHtml)
+      .replace(/\{\{analytics\}\}/g, analyticsHtml)
+      .replace(/\{\{heard_from_options\}\}/g, heardFromOptions)
       .replace(/\{\{icon:([\w-]+)\}\}/g, (_, n) => icon(n))
       .replace(/\{\{asset:([^}]+)\}\}/g, (_, p) => asset(p.trim()))
       .replace(/\{\{year\}\}/g, String(new Date().getFullYear()))

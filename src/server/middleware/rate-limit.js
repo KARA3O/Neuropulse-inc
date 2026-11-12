@@ -8,7 +8,9 @@ import { HttpError } from '../lib/http.js';
 export const LIMITS = {
   enquiry: { max: 5, window: 3600 },     // 5 project enquiries per hour per visitor
   subscribe: { max: 5, window: 3600 },
+  call: { max: 6, window: 3600 },        // 6 call bookings or cancellations per hour per visitor
   login: { max: 8, window: 900 },        // 8 login attempts per 15 minutes
+  twofa: { max: 10, window: 900 },       // 10 two-factor code checks (turning it on or off) per 15 minutes
 };
 
 /**

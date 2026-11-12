@@ -3,13 +3,29 @@
  */
 
 export function findAdminByEmail(db, email) {
-  return db.prepare('SELECT id, email, name, password_hash FROM admins WHERE email = ?1').bind(email).first();
+  return db.prepare('SELECT id, email, name, password_hash, totp_secret, totp_enabled FROM admins WHERE email = ?1').bind(email).first();
+}
+
+export function findAdminById(db, id) {
+  return db.prepare('SELECT id, email, name, password_hash, totp_secret, totp_enabled FROM admins WHERE id = ?1').bind(id).first();
+}
+
+/** Store a new, not-yet-active authenticator secret. */
+export function saveTotpSecret(db, id, secret) {
+  return db.prepare('UPDATE admins SET totp_secret = ?1, totp_enabled = 0 WHERE id = ?2').bind(secret, id).run();
+}
+
+export function setTotpEnabled(db, id, enabled) {
+  return db
+    .prepare(enabled ? 'UPDATE admins SET totp_enabled = 1 WHERE id = ?1' : 'UPDATE admins SET totp_enabled = 0, totp_secret = NULL WHERE id = ?1')
+    .bind(id)
+    .run();
 }
 
 export function findSessionAdmin(db, tokenHash) {
   return db
     .prepare(
-      `SELECT a.id, a.email, a.name, s.expires_at
+      `SELECT a.id, a.email, a.name, a.totp_enabled, s.expires_at
          FROM sessions s JOIN admins a ON a.id = s.admin_id
         WHERE s.token_hash = ?1 AND s.expires_at > strftime('%Y-%m-%dT%H:%M:%fZ','now')`,
     )

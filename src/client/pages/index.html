@@ -20,6 +20,7 @@
       <p class="hero__lede">Neuropulse designs, builds and hosts websites, booking systems and custom web apps for South African businesses. You get a clear quote, a demo every week and a site you can update yourself.</p>
       <div class="hero__actions">
         <a class="btn btn--primary btn--lg" href="#contact">Start a project</a>
+        <a class="btn btn--ghost btn--lg" href="#book">Book a free call</a>
         <a class="btn btn--ghost btn--lg" href="/work">See our work</a>
       </div>
       <ul class="hero__proof" role="list">
@@ -27,6 +28,26 @@
         <li><strong>Reply in 1 business day</strong> by email or WhatsApp</li>
         <li><strong>You own it</strong> your code, domain and data</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- SHOWREEL: the 40-second advert ----------------------------------------------------->
+  <section class="section section--ink showreel" id="watch" aria-labelledby="watch-title">
+    <div class="wrap showreel__grid">
+      <div class="showreel__text">
+        <h2 class="h-section" id="watch-title">See what we do in under a minute</h2>
+        <p>A quick look at how Neuropulse designs, builds and hosts websites and systems for South African businesses.</p>
+        <details class="showreel__script">
+          <summary>Read what the video says</summary>
+          <p>Your customers are searching for you, right now. Can they find you? Neuropulse designs, builds and hosts websites, booking systems and custom web apps for South African businesses. You get a clear, fixed quote, a working demo every week, and a site you can update yourself. Most business websites launch in two to four weeks, and the code, the domain and the data are yours from day one.</p>
+        </details>
+      </div>
+      <figure class="showreel__frame">
+        <video controls preload="none" playsinline width="1920" height="1080" poster="/assets/video/neuropulse-ad-poster.jpg" aria-label="Neuropulse Inc. advert, about 40 seconds">
+          <source src="/assets/video/neuropulse-ad.mp4" type="video/mp4">
+          Your browser cannot play this video. <a href="/assets/video/neuropulse-ad.mp4">Download it here</a>.
+        </video>
+      </figure>
     </div>
   </section>
 
@@ -82,6 +103,42 @@
             <ul class="ticks" role="list"><li>Uptime and error monitoring</li><li>Monthly backups of your database</li><li>Content edits and small improvements</li></ul>
           </div>
         </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTANT ESTIMATE ------------------------------------------------------------------>
+  <section class="section section--ink estimator" id="estimate" aria-labelledby="estimate-title" data-estimator>
+    <div class="wrap estimator__grid">
+      <div class="estimator__intro">
+        <h2 class="h-section" id="estimate-title">Get an instant estimate</h2>
+        <p>Pick what you need and see a typical timeline straight away. Send it to us and we turn it into a fixed written quote after a free call.</p>
+        <a class="link-arrow link-arrow--light" href="#book">Prefer to talk it through? Book a call</a>
+      </div>
+      <div class="estimator__panel card-dark">
+        <fieldset class="est-group">
+          <legend>What do you need?</legend>
+          <div class="choice-grid" data-est-types></div>
+        </fieldset>
+        <div class="field est-group" data-est-pages-wrap hidden>
+          <label for="est-pages">How big is the website?</label>
+          <select id="est-pages" class="est-select" data-est-pages></select>
+        </div>
+        <fieldset class="est-group" data-est-extras-wrap hidden>
+          <legend>Add-ons</legend>
+          <div class="choice-grid" data-est-extras></div>
+        </fieldset>
+        <div class="estimate" data-est-result aria-live="polite" hidden>
+          <p class="estimate__label">Your estimate</p>
+          <p class="estimate__price" data-est-price></p>
+          <ul class="estimate__facts" role="list" data-est-facts></ul>
+          <p class="estimate__note">A guide, not a quote. After a free 30-minute call you get a fixed price in writing, and it does not change halfway through.</p>
+          <div class="estimate__actions">
+            <button class="btn btn--primary" type="button" data-est-send>Send this with my enquiry</button>
+            <a class="btn btn--ghost" href="#book">Talk it through first</a>
+          </div>
+          <p class="estimate__sent" data-est-sent hidden>Added to the enquiry form below. Add your details and send it.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -154,6 +211,16 @@
     </div>
   </section>
 
+  <!-- TESTIMONIALS: stays hidden until you publish a real quote in the dashboard ------------>
+  <section class="section section--paper testimonials" id="testimonials" aria-labelledby="testimonials-title" data-testimonials hidden>
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="h-section" id="testimonials-title">What clients say</h2>
+      </div>
+      <div class="quotes" data-testimonial-list></div>
+    </div>
+  </section>
+
   <!-- FAQ ------------------------------------------------------------------------------->
   <section class="section section--paper faq" id="faq" aria-labelledby="faq-title">
     <div class="wrap faq__grid">
@@ -165,6 +232,83 @@
         <details><summary>Do you handle hosting and the domain?</summary><p>Yes. We set up hosting on Cloudflare, which is fast in South Africa and often free for small sites, and register the domain in your name.</p></details>
         <details><summary>Do you work with businesses outside Limpopo?</summary><p>Yes. We are based in Limpopo and work with clients across South Africa over calls, WhatsApp and email.</p></details>
         <details><summary>What happens after launch?</summary><p>We fix any bugs for free for 30 days. After that you can choose a monthly care plan or contact us whenever you need changes.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK A CALL ----------------------------------------------------------------------->
+  <section class="section section--ink book" id="book" aria-labelledby="book-title" data-booking>
+    <div class="wrap book__grid">
+      <div class="book__intro">
+        <h2 class="h-section" id="book-title">Book a free 30-minute call</h2>
+        <p>Pick a time that suits you. We talk through what you need, then send a written quote with a fixed price.</p>
+        <ul class="ticks" role="list">
+          <li>No cost and no obligation</li>
+          <li>You talk to the founder directly</li>
+          <li>Phone or WhatsApp: your choice</li>
+        </ul>
+      </div>
+
+      <div class="book__panel card-dark">
+        <div data-book-pick>
+          <p class="book__tz" data-book-tz>Loading available times…</p>
+          <div class="slot-days" role="group" aria-label="Choose a day" data-book-days></div>
+          <div class="slot-times" role="group" aria-label="Choose a time" data-book-times></div>
+        </div>
+
+        <form data-book-form hidden novalidate>
+          <div class="book__chosen" data-book-chosen>
+            <div><small class="muted">Your call</small><br><strong data-book-when></strong></div>
+            <button class="btn btn--ghost btn--sm" type="button" data-book-change>Change time</button>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="b-name">Your name</label>
+              <input id="b-name" name="name" required minlength="2" maxlength="80" autocomplete="name">
+              <p class="field-error" data-error-for="name"></p>
+            </div>
+            <div class="field">
+              <label for="b-email">Email</label>
+              <input id="b-email" name="email" type="email" required maxlength="254" autocomplete="email">
+              <p class="field-error" data-error-for="email"></p>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="b-phone">Phone or WhatsApp <span class="optional">optional</span></label>
+              <input id="b-phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="072 123 4567">
+              <p class="field-error" data-error-for="phone"></p>
+            </div>
+            <div class="field">
+              <label for="b-company">Business name <span class="optional">optional</span></label>
+              <input id="b-company" name="company" maxlength="100" autocomplete="organization">
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-topic">What would you like to talk about? <span class="optional">optional</span></label>
+            <textarea id="b-topic" name="topic" rows="3" maxlength="500" placeholder="For example: a website with online booking for my salon."></textarea>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="consent" required>
+            <span>Neuropulse may store these details to contact me about this call, as described in the <a href="/privacy" target="_blank">privacy policy</a>.</span>
+          </label>
+          <p class="field-error" data-error-for="consent"></p>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="turnstile" data-turnstile></div>
+          <p class="form-alert" role="alert" data-book-alert hidden></p>
+          <button class="btn btn--primary book__submit" type="submit">Confirm my call</button>
+        </form>
+
+        <div class="book__done" data-book-done hidden tabindex="-1">
+          <svg class="brief__done-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><path d="M19 33l9 9 17-19"/></svg>
+          <h3>You are booked</h3>
+          <p><strong data-book-label></strong><br>Reference <strong data-book-ref></strong></p>
+          <p data-book-mail></p>
+          <div class="estimate__actions">
+            <a class="btn btn--ghost btn--sm" data-book-gcal target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+            <button class="btn btn--ghost btn--sm" type="button" data-book-another>Book another time</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
