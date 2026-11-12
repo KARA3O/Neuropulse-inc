@@ -19,6 +19,11 @@
     <h1>Sign in to the dashboard</h1>
     <div class="field"><label for="l-email">Email</label><input id="l-email" name="email" type="email" autocomplete="username" required></div>
     <div class="field"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>
+    <div class="field" data-login-code hidden>
+      <label for="l-code">Authenticator code</label>
+      <input id="l-code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="123 456">
+      <p class="muted field-hint">Open your authenticator app and type the 6-digit code for Neuropulse Admin.</p>
+    </div>
     <p class="form-alert" role="alert" data-login-error hidden></p>
     <button class="btn btn--primary" type="submit">Sign in</button>
     <p class="login__hint">Accounts are created with <code>npm run admin:create</code>.</p>
@@ -32,8 +37,11 @@
     <nav class="side__nav" aria-label="Dashboard">
       <button type="button" data-tab="overview" aria-current="page">Overview</button>
       <button type="button" data-tab="enquiries">Enquiries <span class="badge" data-new-count hidden></span></button>
+      <button type="button" data-tab="calls">Calls <span class="badge" data-call-count hidden></span></button>
       <button type="button" data-tab="projects">Projects</button>
+      <button type="button" data-tab="testimonials">Testimonials</button>
       <button type="button" data-tab="subscribers">Subscribers</button>
+      <button type="button" data-tab="security">Security</button>
     </nav>
     <div class="side__foot">
       <span class="side__who" data-admin-name></span>
@@ -56,6 +64,10 @@
           <h2>Recent activity</h2>
           <ul class="activity" data-activity role="list"></ul>
         </div>
+      </div>
+      <div class="panel panel--spaced">
+        <h2>Where enquiries come from (last 90 days)</h2>
+        <ul class="sources" data-sources role="list"></ul>
       </div>
     </section>
 
@@ -94,6 +106,71 @@
       </header>
       <p class="muted">Published projects appear on the website's "Our work" section. Drafts are only visible here.</p>
       <div class="project-rows" data-project-rows></div>
+    </section>
+
+    <!-- Calls -->
+    <section data-panel="calls" hidden>
+      <header class="main__head"><h1>Discovery calls</h1></header>
+      <p class="muted">Free 30-minute calls booked from the website. Times are South Africa time. Change your hours in <code>src/server/lib/booking.js</code> and holidays in <code>BOOKING_BLOCKED_DATES</code> in <code>wrangler.jsonc</code>.</p>
+      <h2 class="subhead">Upcoming</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>When</th><th>Who</th><th>Topic</th><th>Status</th></tr></thead>
+          <tbody data-call-rows-upcoming></tbody>
+        </table>
+      </div>
+      <h2 class="subhead">Recent</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>When</th><th>Who</th><th>Topic</th><th>Status</th></tr></thead>
+          <tbody data-call-rows-past></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section data-panel="testimonials" hidden>
+      <header class="main__head">
+        <h1>Testimonials</h1>
+        <button class="btn btn--primary btn--sm" type="button" data-new-testimonial>Add testimonial</button>
+      </header>
+      <p class="muted">Only add quotes a client actually gave you, with their permission. Published quotes appear on the home page (the section stays hidden until there is one) and on the linked project's case study.</p>
+      <div class="project-rows" data-testimonial-rows></div>
+    </section>
+
+    <!-- Security -->
+    <section data-panel="security" hidden>
+      <header class="main__head"><h1>Security</h1></header>
+      <div class="panel panel--wide">
+        <h2>Two-factor sign-in</h2>
+        <p class="muted" data-2fa-status>Checking…</p>
+        <div data-2fa-off hidden>
+          <p>Adds a 6-digit code from your phone to every sign-in, so a stolen password alone cannot open this dashboard. Works with Google Authenticator, Microsoft Authenticator, Authy and 1Password.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-2fa-start>Set up two-factor sign-in</button>
+        </div>
+        <div data-2fa-setup hidden>
+          <ol class="steps-list">
+            <li>Open your authenticator app and choose <strong>Add account</strong>, then <strong>Enter a setup key</strong>.</li>
+            <li>Account name: <code>Neuropulse Admin</code>. Key (type of key: time-based):<br><code class="secret" data-2fa-secret></code></li>
+            <li>Type the 6-digit code the app now shows:</li>
+          </ol>
+          <form class="inline-form" data-2fa-enable novalidate>
+            <input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="123 456" aria-label="6-digit code" required>
+            <button class="btn btn--primary btn--sm" type="submit">Turn on</button>
+          </form>
+          <p class="form-alert" role="alert" data-2fa-error hidden></p>
+          <p class="muted field-hint">Keep your phone safe: if you lose the app you will need to remove the setup key from the database to sign in again.</p>
+        </div>
+        <div data-2fa-on hidden>
+          <p>Two-factor sign-in is on for your account. To turn it off, enter your password and a current code.</p>
+          <form class="inline-form" data-2fa-disable novalidate>
+            <input name="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+            <input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="123 456" aria-label="6-digit code" required>
+            <button class="btn btn--danger btn--sm" type="submit">Turn off</button>
+          </form>
+          <p class="form-alert" role="alert" data-2fa-error-off hidden></p>
+        </div>
+      </div>
     </section>
 
     <!-- Subscribers -->
@@ -155,6 +232,10 @@
     </div>
     <div class="field"><label for="p-summary">Summary (one line on the card)</label><input id="p-summary" name="summary" required maxlength="200"><p class="field-error" data-error-for="summary"></p></div>
     <div class="field"><label for="p-description">Description</label><textarea id="p-description" name="description" rows="3" maxlength="3000"></textarea><p class="field-error" data-error-for="description"></p></div>
+    <p class="muted field-hint">Case study (optional). Each box only appears on the project's page when it has text. Write only what is true; add numbers only if you measured them.</p>
+    <div class="field"><label for="p-problem">The challenge</label><textarea id="p-problem" name="problem" rows="3" maxlength="2000" placeholder="What did the client need or struggle with?"></textarea><p class="field-error" data-error-for="problem"></p></div>
+    <div class="field"><label for="p-solution">What we built</label><textarea id="p-solution" name="solution" rows="3" maxlength="2000"></textarea><p class="field-error" data-error-for="solution"></p></div>
+    <div class="field"><label for="p-results">The result</label><textarea id="p-results" name="results" rows="3" maxlength="2000" placeholder="What changed for the client?"></textarea><p class="field-error" data-error-for="results"></p></div>
     <div class="field"><label for="p-url">Website link</label><input id="p-url" name="url" type="url" placeholder="https://client-site.co.za"><p class="field-error" data-error-for="url"></p></div>
     <div class="field">
       <label for="p-image">Screenshot</label>
@@ -179,6 +260,31 @@
     <footer class="drawer__foot">
       <button class="btn btn--danger btn--sm" type="button" data-proj-delete hidden>Delete</button>
       <button class="btn btn--primary" type="submit">Save project</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- Testimonial editor -->
+<dialog class="drawer" data-testimonial-dialog aria-labelledby="test-title">
+  <form class="drawer__inner" data-testimonial-form novalidate>
+    <header class="drawer__head">
+      <h2 id="test-title" data-test-title>Add testimonial</h2>
+      <button class="icon-close" type="button" data-close aria-label="Close">&times;</button>
+    </header>
+    <div class="field"><label for="t-quote">Quote</label><textarea id="t-quote" name="quote" rows="4" maxlength="500" required></textarea><p class="field-error" data-error-for="quote"></p></div>
+    <div class="field-row">
+      <div class="field"><label for="t-name">Client name</label><input id="t-name" name="author_name" required maxlength="80"><p class="field-error" data-error-for="author_name"></p></div>
+      <div class="field"><label for="t-role">Role and business</label><input id="t-role" name="author_role" maxlength="100" placeholder="Owner, 4Guard Cleaning"><p class="field-error" data-error-for="author_role"></p></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label for="t-project">About which project?</label><select id="t-project" name="project_id" data-test-projects><option value="">None</option></select><p class="field-error" data-error-for="project_id"></p></div>
+      <div class="field"><label for="t-order">Order</label><input id="t-order" name="sort_order" type="number" min="0" max="10000" value="100"></div>
+    </div>
+    <label class="check"><input type="checkbox" name="published"><span>Published on the website (the client agreed to this)</span></label>
+    <p class="form-alert" role="alert" data-test-error hidden></p>
+    <footer class="drawer__foot">
+      <button class="btn btn--danger btn--sm" type="button" data-test-delete hidden>Delete</button>
+      <button class="btn btn--primary" type="submit">Save testimonial</button>
     </footer>
   </form>
 </dialog>

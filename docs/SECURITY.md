@@ -15,6 +15,11 @@
 | CSV formula injection in exports | Cells starting with `= + - @` are prefixed with `'` | `http.js → csvCell` |
 | Oversized payloads | 32 KB body cap, field length limits | `http.js → readJson`, `validate.js` |
 | Information leakage | Generic 500 messages; stack traces only in Worker logs | `http.js → errorResponse` |
+| Stolen admin password | Optional two-factor sign-in (6-digit authenticator code, RFC 6238). The password is always checked first, so the form never reveals that 2FA is on to someone without it; code checks have their own rate limit | `totp.js`, `auth.service.js`, `admin.routes.js` |
+| Double-booked or spammed call slots | Only exact generated slots are accepted, a partial unique index in the database refuses a second booking for the same time, honeypot + rate limit (6 per hour) + optional Turnstile | `booking.js`, `calls.repo.js`, `0003_growth_features.sql` |
+| Email scanners cancelling calls | The cancel link opens a page; cancelling needs a click (a `POST` with the same-origin check) | `public.routes.js` |
+| Injection through case-study text | The Worker renders case studies with every value HTML-escaped (and a unit test checks it); JSON-LD escapes `<` | `pages/case-study.js` |
+| Alert emails leaking visitor data | Error alerts contain the path (no query string), the error message and a short stack, never form content, and are limited to one per 15 minutes | `alert.service.js` |
 
 ## Headers (static pages)
 
@@ -29,17 +34,16 @@ Set in `src/client/_headers`: `Content-Security-Policy`, `Strict-Transport-Secur
 | Openness | `/privacy` explains what is collected, why, where it is stored and for how long |
 | Security safeguards | See the table above; admin access only through password-protected accounts |
 | Data subject rights | Dashboard **Delete** for erasure requests, CSV export for access requests, one-click unsubscribe |
-| Retention | The policy states 24 months. Run the query below periodically, or add it to the cron (see `ROADMAP.md`) |
+| Retention | The policy states 24 months, or longer for clients. The daily cron (`repositories/retention.repo.js`) deletes enquiries older than 24 months unless their status is `won`, call bookings older than 24 months and audit entries older than 24 months, and logs how many it removed (`npm run logs`) |
 
-```sql
-DELETE FROM enquiries WHERE status IN ('lost','spam') AND created_at < strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 months');
-```
+Subscribers stay until they unsubscribe or ask to be removed. Visitors who book a call or send an enquiry can ask for deletion at any time: use **Delete** in the dashboard (enquiries and calls).
 
 ## Operational checklist
 
 - [ ] Use a long, unique admin password (a short sentence works well)
 - [ ] Set a real `IP_SALT` secret in production
 - [ ] Enable 2FA on your Cloudflare and GitHub accounts
+- [ ] Turn on two-factor sign-in: Dashboard → Security
 - [ ] Enable Turnstile if spam appears
 - [ ] Export a database backup monthly
 - [ ] Review the dashboard's recent activity occasionally

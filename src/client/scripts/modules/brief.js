@@ -6,10 +6,28 @@
  *  - maps server-side field errors back to the right step
  */
 import { api } from './api.js';
+import { mountTurnstile, resetTurnstile } from './turnstile.js';
 
 const DRAFT_KEY = 'np-brief-draft';
-const STEP_FIELDS = { 1: ['service', 'budget', 'timeline'], 2: ['message', 'company'], 3: ['name', 'email', 'phone', 'contact_pref', 'consent'] };
+const UTM_KEY = 'np-utm';
+const STEP_FIELDS = { 1: ['service', 'budget', 'timeline'], 2: ['message', 'company'], 3: ['name', 'email', 'phone', 'contact_pref', 'heard_from', 'consent'] };
 const TOTAL = 3;
+
+/** Remember ?utm_source=... tags from the link the visitor arrived on, for this browsing session only. */
+function captureUtm() {
+  const out = {};
+  try {
+    const q = new URLSearchParams(location.search);
+    for (const k of ['utm_source', 'utm_medium', 'utm_campaign']) {
+      const v = (q.get(k) || '').trim().slice(0, 60);
+      if (/^[\w .:+\-/]{1,60}$/.test(v)) out[k] = v;
+    }
+    if (Object.keys(out).length) sessionStorage.setItem(UTM_KEY, JSON.stringify(out));
+    return Object.keys(out).length ? out : JSON.parse(sessionStorage.getItem(UTM_KEY) || '{}');
+  } catch {
+    return out;
+  }
+}
 
 export async function initBrief() {
   const root = document.querySelector('[data-brief]');
@@ -25,6 +43,9 @@ export async function initBrief() {
   const counter = form.querySelector('[data-counter]');
   let current = 1;
   let turnstileToken = null;
+  let turnstileWidget = null;
+  let estimate = null; // choices from the "Get an instant estimate" section, sent with the enquiry
+  const utm = captureUtm();
 
   // ---- helpers ----
   const fieldEl = (name) => form.elements[name];
@@ -124,6 +145,8 @@ export async function initBrief() {
       ...Object.fromEntries(fd),
       consent: fieldEl('consent').checked,
       source_page: location.pathname,
+      ...utm,
+      ...(estimate ? { quote_selection: JSON.stringify(estimate) } : {}),
       turnstileToken,
     };
 
@@ -135,6 +158,8 @@ export async function initBrief() {
 
     if (ok) {
       clearDraft();
+      estimate = null;
+      window.__npEstimate = null;
       root.querySelector('[data-reference]').textContent = data.reference;
       form.hidden = true;
       done.hidden = false;
@@ -152,35 +177,45 @@ export async function initBrief() {
     }
     alertBox.textContent = data.error || 'Your enquiry could not be sent. Try again, or email us directly.';
     alertBox.hidden = false;
-    if (window.turnstile) { window.turnstile.reset(); turnstileToken = null; }
+    resetTurnstile(turnstileWidget);
+    turnstileToken = null;
   });
 
   root.querySelector('[data-restart]').addEventListener('click', () => {
     form.reset();
+    estimate = null;
     updateCounter();
     done.hidden = true;
     form.hidden = false;
     show(1);
   });
 
+  // ---- choices from the instant estimate ----
+  const applyEstimate = (est) => {
+    if (!est) return;
+    estimate = est.selection;
+    const radio = [...form.querySelectorAll('input[name="service"]')].find((r) => r.value === est.service);
+    if (radio) radio.checked = true;
+    const msg = fieldEl('message');
+    const summary = [est.selection.type, est.selection.pages, ...est.selection.extras].filter(Boolean).join(', ');
+    if (!msg.value.trim()) msg.value = `I built an estimate on your website: ${summary}.\n\nMore about what I need: `;
+    if (form.hidden) { form.hidden = false; done.hidden = true; }
+    updateCounter();
+    saveDraft();
+    show(2, false);
+    msg.focus({ preventScroll: true });
+    msg.setSelectionRange(msg.value.length, msg.value.length);
+  };
+  document.addEventListener('np:estimate', (ev) => applyEstimate(ev.detail));
+
   loadDraft();
   updateCounter();
   show(1, false);
+  applyEstimate(window.__npEstimate);
 
   // ---- optional Turnstile ----
   const { ok, data } = await api('/api/config');
   if (ok && data.turnstileSiteKey) {
-    window.onNpTurnstile = () => {
-      window.turnstile.render(form.querySelector('[data-turnstile]'), {
-        sitekey: data.turnstileSiteKey,
-        theme: 'dark',
-        callback: (t) => { turnstileToken = t; },
-        'expired-callback': () => { turnstileToken = null; },
-      });
-    };
-    const s = document.createElement('script');
-    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onNpTurnstile&render=explicit';
-    s.async = true;
-    document.head.appendChild(s);
+    turnstileWidget = await mountTurnstile(form.querySelector('[data-turnstile]'), data.turnstileSiteKey, (t) => { turnstileToken = t; });
   }
 }

@@ -22,11 +22,11 @@ export function randomToken(bytes = 32) {
   return toB64(crypto.getRandomValues(new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-/** Human-friendly reference like NP-7K3QX2 (no 0/O/1/I to avoid confusion on the phone). */
-export function referenceCode() {
+/** Human-friendly reference like NP-7K3QX2 or CALL-7K3QX2 (no 0/O/1/I to avoid confusion on the phone). */
+export function referenceCode(prefix = 'NP') {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const bytes = crypto.getRandomValues(new Uint8Array(6));
-  return 'NP-' + [...bytes].map((b) => alphabet[b % alphabet.length]).join('');
+  return `${prefix}-` + [...bytes].map((b) => alphabet[b % alphabet.length]).join('');
 }
 
 /** Constant-time string comparison. */

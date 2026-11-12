@@ -97,12 +97,46 @@ The smoke test creates and deletes a test enquiry and a test project. Run it rig
 
 ---
 
+## Upgrading an existing site to 1.2.0
+
+```bash
+npm install
+npm run db:migrate:remote     # adds migrations 0003 and 0004 (safe: existing rows are kept)
+npm run deploy                # builds, runs the tests, dry-runs, then uploads
+```
+
+Then open `/admin` → **Security** and turn on two-factor sign-in.
+
 ## Optional: email alerts (Resend, free 3,000 emails/month)
 
 1. Sign up at <https://resend.com> with neuropulse.inc@gmail.com and create an API key.
 2. `npx wrangler secret put RESEND_API_KEY` and paste the key.
-3. Until you verify your own domain in Resend, `MAIL_FROM` must stay `onboarding@resend.dev`, and Resend only delivers to the email you signed up with. That is fine, because alerts go to you.
-4. After you own `neuropulseinc.com`, verify it in Resend and change `MAIL_FROM` in `wrangler.jsonc` to `Neuropulse Website <hello@neuropulseinc.com>`.
+3. Until you verify your own domain in Resend, `MAIL_FROM` must stay `onboarding@resend.dev`, and Resend only delivers to the email you signed up with. That is fine for alerts to you (new enquiries, new calls, server errors), **but the automatic replies and call confirmations to visitors are skipped** until step 4. The booking page tells the visitor honestly when no confirmation email will arrive.
+4. After you own a domain, verify it in Resend (Domains → Add domain, then add the DNS records it shows) and change `MAIL_FROM` in `wrangler.jsonc` to `Neuropulse <hello@yourdomain>`, then `npm run deploy`. From then on every enquiry gets an automatic reply and every booked call a confirmation with a calendar file.
+
+## Optional: visitor counts (Cloudflare Web Analytics, free, no cookies)
+
+1. Cloudflare dashboard → **Analytics & Logs → Web Analytics → Add a site** (use your workers.dev or custom hostname).
+2. Copy the **token** (32 characters) and paste it into `site.config.json → analytics.cloudflareToken`.
+3. `npm run deploy`. The privacy policy needs no change: the beacon sets no cookies.
+
+## Optional: show prices in the instant estimate
+
+Open `site.config.json → estimator`. Replace each `[null, null]` with `[lowest, highest]` rand amounts for that service, page count or add-on (for example `[4000, 9000]`), then set `"showPrices": true`. A range is shown only when **every** selected item has both numbers; otherwise visitors see "Fixed price after a free call". The prices are only a guide shown on the page, so keep the wording "a guide, not a quote".
+
+## Optional: call booking hours and holidays
+
+- Hours and days: `BOOKING` at the top of `src/server/lib/booking.js` (default Monday to Friday, 09:00 to 16:00 South Africa time, 30-minute calls, up to 14 days ahead, 12 hours' notice).
+- Days with no calls (public holidays, leave): `BOOKING_BLOCKED_DATES` in `wrangler.jsonc`, a comma-separated list like `2026-12-16,2026-12-25`.
+- Calls already booked for a blocked day stay in the dashboard; message those visitors yourself.
+
+## Two-factor sign-in: set up and recover
+
+Set up: dashboard → **Security** → **Set up**, add the key in an authenticator app, type the first code. If you lose the phone, remove the key from the database:
+
+```bash
+npx wrangler d1 execute neuropulse-db --remote --command "UPDATE admins SET totp_enabled = 0, totp_secret = NULL WHERE email = 'neuropulse.inc@gmail.com'"
+```
 
 ## Optional: bot protection (Turnstile, free)
 

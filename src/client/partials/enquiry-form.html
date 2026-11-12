@@ -87,6 +87,13 @@
           </div>
         </div>
       </div>
+      <div class="field">
+        <label for="f-heard">How did you hear about us? <span class="optional">optional</span></label>
+        <select id="f-heard" name="heard_from">
+          <option value="">Choose one</option>
+          {{heard_from_options}}
+        </select>
+      </div>
       <label class="check">
         <input type="checkbox" name="consent" required>
         <span>Neuropulse may store these details to reply to my enquiry, as described in the <a href="/privacy" target="_blank">privacy policy</a>.</span>

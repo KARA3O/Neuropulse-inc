@@ -22,6 +22,16 @@ export function isHttpUrl(s) {
   }
 }
 
+/** True when the text parses to a JSON object (not an array or a bare value). */
+export function isJsonObject(s) {
+  try {
+    const v = JSON.parse(s);
+    return !!v && typeof v === 'object' && !Array.isArray(v);
+  } catch {
+    return false;
+  }
+}
+
 /** Strip control characters (keeps newlines and tabs) and trim. */
 export function clean(s) {
   // eslint-disable-next-line no-control-regex
@@ -60,6 +70,7 @@ export function validate(input, schema, opts = {}) {
         if (rule.url && !isHttpUrl(v)) { errors[key] = `${label} must be a full link starting with https://`; continue; }
         if (rule.enum && !rule.enum.includes(v)) { errors[key] = `Choose one of the options for ${label.toLowerCase()}.`; continue; }
         if (rule.pattern && !rule.pattern.test(v)) { errors[key] = rule.patternMessage || `${label} has an invalid format.`; continue; }
+        if (rule.json && !isJsonObject(v)) { errors[key] = `${label} is not valid.`; continue; }
         out[key] = v;
         break;
       }
@@ -98,8 +109,13 @@ export function validate(input, schema, opts = {}) {
 export const SERVICES = ['Business website', 'Web application', 'Booking or e-commerce system', 'Android app', 'API or database', 'Maintenance & hosting', 'Not sure yet'];
 export const BUDGETS = ['Under R5 000', 'R5 000 – R15 000', 'R15 000 – R50 000', 'R50 000+', 'Not sure yet'];
 export const TIMELINES = ['As soon as possible', 'Within 1 month', '1 – 3 months', 'Just exploring'];
+export const HEARD_FROM = ['Instagram', 'X (Twitter)', 'YouTube', 'Facebook', 'WhatsApp', 'Google search', 'A friend or client', 'Neuropulse video advert', 'Other'];
 export const ENQUIRY_STATUSES = ['new', 'contacted', 'in_progress', 'won', 'lost', 'spam'];
 export const PROJECT_STATUSES = ['live', 'in_development', 'coming_soon'];
+export const CALL_STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
+
+/** Tracking tags from links like ?utm_source=instagram: short, plain text only. */
+const utm = { max: 60, pattern: /^[\w .:+\-/]{1,60}$/, patternMessage: 'Invalid tracking tag.' };
 
 export const enquirySchema = {
   name: { required: true, min: 2, max: 80, label: 'Your name' },
@@ -113,15 +129,53 @@ export const enquirySchema = {
   contact_pref: { enum: ['email', 'phone', 'whatsapp'], default: 'email', label: 'Contact preference' },
   consent: { type: 'boolean', required: true, label: 'Consent' },
   source_page: { max: 200 },
+  heard_from: { enum: HEARD_FROM, label: 'How you heard about us' },
+  utm_source: { ...utm, label: 'Source' },
+  utm_medium: { ...utm, label: 'Medium' },
+  utm_campaign: { ...utm, label: 'Campaign' },
+  quote_selection: { max: 1500, json: true, label: 'Estimate' },
 };
 
 export const subscribeSchema = {
   email: { required: true, email: true, max: 254, label: 'Email' },
 };
 
+const CODE = { pattern: /^\d{3}\s?\d{3}$/, patternMessage: 'Enter the 6-digit code from your authenticator app.', max: 7 };
+
 export const loginSchema = {
   email: { required: true, email: true, max: 254, label: 'Email' },
   password: { required: true, min: 1, max: 200, label: 'Password' },
+  code: { ...CODE, label: 'Code' },
+};
+
+export const totpCodeSchema = { code: { ...CODE, required: true, label: 'Code' } };
+
+export const totpDisableSchema = {
+  password: { required: true, min: 1, max: 200, label: 'Password' },
+  code: { ...CODE, required: true, label: 'Code' },
+};
+
+export const callSchema = {
+  slot: { required: true, max: 30, label: 'Time' },
+  name: { required: true, min: 2, max: 80, label: 'Your name' },
+  email: { required: true, email: true, max: 254, label: 'Email' },
+  phone: { max: 20, pattern: /^[+\d][\d\s()-]{6,19}$/, patternMessage: 'Enter a phone number like 072 123 4567.', label: 'Phone' },
+  company: { max: 100, label: 'Company' },
+  topic: { max: 500, label: 'What to talk about' },
+  consent: { type: 'boolean', required: true, label: 'Consent' },
+};
+
+export const callUpdateSchema = {
+  status: { required: true, enum: CALL_STATUSES, label: 'Status' },
+};
+
+export const testimonialSchema = {
+  author_name: { required: true, min: 2, max: 80, label: 'Name' },
+  author_role: { max: 100, label: 'Role' },
+  quote: { required: true, min: 10, max: 500, label: 'Quote' },
+  project_id: { type: 'integer', min: 1, label: 'Project' },
+  published: { type: 'boolean', default: false },
+  sort_order: { type: 'integer', min: 0, max: 10000, default: 100, label: 'Order' },
 };
 
 export const projectSchema = {
@@ -131,6 +185,9 @@ export const projectSchema = {
   industry: { max: 60, label: 'Industry' },
   summary: { required: true, min: 10, max: 200, label: 'Summary' },
   description: { max: 3000, label: 'Description' },
+  problem: { max: 2000, label: 'The challenge' },
+  solution: { max: 2000, label: 'What we built' },
+  results: { max: 2000, label: 'The result' },
   url: { url: true, max: 300, label: 'Website link' },
   image_url: { max: 300, pattern: /^(https:\/\/|\/assets\/|\/media\/projects\/)/, patternMessage: 'Use an https:// link, a path starting with /assets/, or an uploaded image.', label: 'Screenshot' },
   accent: { pattern: /^#[0-9a-fA-F]{6}$/, patternMessage: 'Use a hex colour like #1E9BFF.', default: '#1E9BFF', label: 'Accent colour' },

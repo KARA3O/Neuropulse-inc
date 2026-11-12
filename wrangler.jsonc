@@ -17,7 +17,8 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/api/*", "/media/*"]
+    // /work/* lets the Worker render each project's case-study page (/work/<slug>).
+    "run_worker_first": ["/api/*", "/media/*", "/work/*"]
   },
 
   // D1 (SQLite at the edge). The site's code uses the binding name "DB": keep exactly one entry.
@@ -38,7 +39,8 @@
     }
   ],
 
-  // Daily housekeeping: deletes expired sessions and old rate-limit rows (02:00 SAST).
+  // Daily housekeeping at 02:00 SAST: deletes expired sessions and old rate-limit rows, and applies the
+  // 24-month retention rule from the privacy policy (old enquiries, call bookings and audit entries).
   "triggers": { "crons": ["0 0 * * *"] },
 
   // Non-secret settings. Secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY, IP_SALT) go in
@@ -47,8 +49,16 @@
     "SITE_NAME": "Neuropulse Inc.",
     "SITE_URL": "https://neuropulse-inc.workers.dev",
     "NOTIFY_EMAIL": "neuropulse.inc@gmail.com",
+    // While this is the Resend test sender, only YOUR inbox receives mail: owner alerts work, but the
+    // automatic replies and call confirmations to visitors are skipped. After verifying your domain in
+    // Resend, change it to e.g. "Neuropulse <hello@neuropulseinc.com>" (see docs/DEPLOYMENT.md).
     "MAIL_FROM": "Neuropulse Website <onboarding@resend.dev>",
-    "TURNSTILE_SITE_KEY": ""
+    "TURNSTILE_SITE_KEY": "",
+    // Used in emails sent to visitors.
+    "WHATSAPP_URL": "https://wa.me/27727216200",
+    "PHONE_DISPLAY": "072 721 6200",
+    // Days with no discovery calls, e.g. public holidays: "2026-12-16,2026-12-25,2026-12-26". Hours are in src/server/lib/booking.js.
+    "BOOKING_BLOCKED_DATES": "2026-12-16,2026-12-25,2026-12-26"
   },
 
   "observability": { "enabled": true }

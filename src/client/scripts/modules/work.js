@@ -21,6 +21,9 @@ function card(p, featured) {
     action = `<span class="project__note">${p.status === 'coming_soon' ? 'Launching soon' : 'Being built now'}</span>`;
   }
 
+  // Every published project has its own case-study page at /work/<slug>.
+  const more = `<a class="project__more" href="/work/${e(p.slug)}">Case study<span class="sr-only"> for ${e(p.name)}</span></a>`;
+
   return `
     <article class="project${featured ? ' project--featured' : ''}" data-status="${e(p.status)}">
       <div class="project__cover" data-accent="${e(p.accent || '')}">${cover}</div>
@@ -33,7 +36,7 @@ function card(p, featured) {
         ${p.client ? `<p class="project__client">${e(p.client)}</p>` : ''}
         <p class="project__summary">${e(p.summary)}</p>
         ${p.tech?.length ? `<ul class="project__tech" role="list" aria-label="Built with">${p.tech.map((t) => `<li>${e(t)}</li>`).join('')}</ul>` : ''}
-        <div class="project__actions">${action}</div>
+        <div class="project__actions">${action}${more}</div>
       </div>
     </article>`;
 }

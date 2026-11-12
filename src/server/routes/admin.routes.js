@@ -16,17 +16,33 @@
  *   DELETE /api/admin/projects/:id       delete
  *   GET    /api/admin/subscribers        list
  *   GET    /api/admin/subscribers.csv    export
+ *   GET    /api/admin/testimonials       all client quotes incl. unpublished
+ *   POST   /api/admin/testimonials       create
+ *   PATCH  /api/admin/testimonials/:id   update
+ *   DELETE /api/admin/testimonials/:id   delete
+ *   GET    /api/admin/calls              upcoming and recent discovery calls
+ *   PATCH  /api/admin/calls/:id          mark completed / no-show / cancelled
+ *   DELETE /api/admin/calls/:id          delete (POPIA erasure requests)
+ *   GET    /api/admin/2fa                is two-factor sign-in on?
+ *   POST   /api/admin/2fa/setup          start setup: returns the authenticator secret
+ *   POST   /api/admin/2fa/enable         confirm with a first code
+ *   POST   /api/admin/2fa/disable        turn off (needs password and a code)
  */
 import { clientIp, csvResponse, HttpError, json, readFormData, readJson } from '../lib/http.js';
 import { getProjectImageFormat, MAX_PROJECT_IMAGE_BYTES, MAX_PROJECT_IMAGE_REQUEST_BYTES } from '../lib/project-images.js';
-import { enquiryUpdateSchema, ENQUIRY_STATUSES, loginSchema, projectSchema, validate } from '../lib/validate.js';
-import { hashIp } from '../lib/crypto.js';
+import {
+  callUpdateSchema, enquiryUpdateSchema, ENQUIRY_STATUSES, loginSchema, projectSchema, testimonialSchema, totpCodeSchema, totpDisableSchema, validate,
+} from '../lib/validate.js';
+import { hashIp, verifyPassword } from '../lib/crypto.js';
+import { generateTotpSecret, otpauthUri, verifyTotp } from '../lib/totp.js';
 import { readCookie, requireAdmin, SESSION_COOKIE, sessionCookie } from '../middleware/auth.js';
 import { enforceRateLimit } from '../middleware/rate-limit.js';
-import { audit, recentAudit } from '../repositories/admins.repo.js';
+import { audit, findAdminById, recentAudit, saveTotpSecret, setTotpEnabled } from '../repositories/admins.repo.js';
+import { countUpcoming, deleteCall, findCall, listCalls, setCallStatus } from '../repositories/calls.repo.js';
 import { dashboardStats, deleteEnquiry, exportEnquiries, findEnquiry, listEnquiries, updateEnquiry } from '../repositories/enquiries.repo.js';
 import { createProject, deleteProject, findById, listAll, slugTaken, updateProject } from '../repositories/projects.repo.js';
 import { listSubscribers } from '../repositories/subscribers.repo.js';
+import { createTestimonial, deleteTestimonial, findTestimonial, listAllTestimonials, updateTestimonial } from '../repositories/testimonials.repo.js';
 import { login, logout } from '../services/auth.service.js';
 
 const toId = (s) => {
@@ -46,8 +62,8 @@ export function registerAdminRoutes(r) {
   // ---- Session ------------------------------------------------------------------------------
   r.post('/api/admin/login', async ({ request, env, url }) => {
     await enforceRateLimit(env.DB, 'login', await hashIp(clientIp(request), env.IP_SALT));
-    const { email, password } = validate(await readJson(request, 2048), loginSchema);
-    const { token, admin, maxAge } = await login(env.DB, email.toLowerCase(), password);
+    const { email, password, code } = validate(await readJson(request, 2048), loginSchema);
+    const { token, admin, maxAge } = await login(env.DB, email.toLowerCase(), password, code);
     return json({ ok: true, admin }, 200, { 'set-cookie': sessionCookie(token, url, maxAge) });
   });
 
@@ -56,17 +72,51 @@ export function registerAdminRoutes(r) {
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie('', url, 0) });
   });
 
-  r.get('/api/admin/me', guarded(({ admin }) => json({ ok: true, admin: { id: admin.id, name: admin.name, email: admin.email } })));
+  r.get('/api/admin/me', guarded(({ admin }) => json({ ok: true, admin: { id: admin.id, name: admin.name, email: admin.email, totp_enabled: admin.totp_enabled === 1 } })));
 
   r.get('/api/admin/stats', guarded(async ({ env }) => {
-    const [stats, activity] = await Promise.all([dashboardStats(env.DB), recentAudit(env.DB, 12)]);
-    return json({ ok: true, stats, activity });
+    const [stats, activity, upcomingCalls] = await Promise.all([dashboardStats(env.DB), recentAudit(env.DB, 12), countUpcoming(env.DB)]);
+    return json({ ok: true, stats: { ...stats, calls: { upcoming: upcomingCalls } }, activity });
+  }));
+
+  // ---- Two-factor sign-in ---------------------------------------------------------------------
+  r.get('/api/admin/2fa', guarded(({ admin }) => json({ ok: true, enabled: admin.totp_enabled === 1 })));
+
+  r.post('/api/admin/2fa/setup', guarded(async ({ env, admin }) => {
+    const current = await findAdminById(env.DB, admin.id);
+    if (current.totp_enabled) throw new HttpError(409, 'Two-factor sign-in is already on. Turn it off first to set it up again.');
+    const secret = generateTotpSecret();
+    await saveTotpSecret(env.DB, admin.id, secret);
+    return json({ ok: true, secret, uri: otpauthUri({ secret, account: admin.email, issuer: 'Neuropulse Admin' }) });
+  }));
+
+  r.post('/api/admin/2fa/enable', guarded(async ({ env, request, admin }) => {
+    await enforceRateLimit(env.DB, 'twofa', await hashIp(clientIp(request), env.IP_SALT));
+    const { code } = validate(await readJson(request, 1024), totpCodeSchema);
+    const current = await findAdminById(env.DB, admin.id);
+    if (!current.totp_secret) throw new HttpError(409, 'Start the setup first.');
+    if (!(await verifyTotp(current.totp_secret, code))) throw new HttpError(422, 'That code is not right. Check the app and try again.', { code: 'That code is not right. Check the app and try again.' });
+    await setTotpEnabled(env.DB, admin.id, true);
+    await audit(env.DB, admin.id, 'admin.2fa_enabled', 'admin', admin.id);
+    return json({ ok: true, enabled: true });
+  }));
+
+  r.post('/api/admin/2fa/disable', guarded(async ({ env, request, admin }) => {
+    await enforceRateLimit(env.DB, 'twofa', await hashIp(clientIp(request), env.IP_SALT));
+    const { password, code } = validate(await readJson(request, 2048), totpDisableSchema);
+    const current = await findAdminById(env.DB, admin.id);
+    if (!current.totp_enabled || !current.totp_secret) throw new HttpError(409, 'Two-factor sign-in is not on.');
+    if (!(await verifyPassword(password, current.password_hash))) throw new HttpError(422, 'That password is not right.', { password: 'That password is not right.' });
+    if (!(await verifyTotp(current.totp_secret, code))) throw new HttpError(422, 'That code is not right.', { code: 'That code is not right.' });
+    await setTotpEnabled(env.DB, admin.id, false);
+    await audit(env.DB, admin.id, 'admin.2fa_disabled', 'admin', admin.id);
+    return json({ ok: true, enabled: false });
   }));
 
   // ---- Enquiries ----------------------------------------------------------------------------
   r.get('/api/admin/enquiries.csv', guarded(async ({ env }) => {
     const rows = await exportEnquiries(env.DB);
-    const cols = ['reference', 'created_at', 'status', 'name', 'email', 'phone', 'company', 'service', 'budget', 'timeline', 'contact_pref', 'message', 'notes'];
+    const cols = ['reference', 'created_at', 'status', 'name', 'email', 'phone', 'company', 'service', 'budget', 'timeline', 'contact_pref', 'heard_from', 'utm_source', 'utm_medium', 'utm_campaign', 'quote_selection', 'message', 'notes'];
     return csvResponse(`neuropulse-enquiries-${new Date().toISOString().slice(0, 10)}.csv`, cols, rows.map((r) => cols.map((c) => r[c])));
   }));
 
@@ -159,6 +209,54 @@ export function registerAdminRoutes(r) {
     const id = toId(params.id);
     await deleteProject(env.DB, id);
     await audit(env.DB, admin.id, 'project.delete', 'project', id);
+    return json({ ok: true });
+  }));
+
+  // ---- Testimonials -------------------------------------------------------------------------
+  r.get('/api/admin/testimonials', guarded(async ({ env }) => json({ ok: true, testimonials: await listAllTestimonials(env.DB) })));
+
+  r.post('/api/admin/testimonials', guarded(async ({ env, request, admin }) => {
+    const data = validate(await readJson(request), testimonialSchema);
+    if (data.project_id && !(await findById(env.DB, data.project_id))) throw new HttpError(422, 'Please fix the highlighted fields.', { project_id: 'Choose a project from the list.' });
+    const id = await createTestimonial(env.DB, data);
+    await audit(env.DB, admin.id, 'testimonial.create', 'testimonial', id);
+    return json({ ok: true, testimonial: await findTestimonial(env.DB, id) }, 201);
+  }));
+
+  r.patch('/api/admin/testimonials/:id', guarded(async ({ env, params, request, admin }) => {
+    const id = toId(params.id);
+    const existing = await findTestimonial(env.DB, id);
+    if (!existing) throw new HttpError(404, 'That testimonial no longer exists.');
+    const data = validate(await readJson(request), testimonialSchema, { partial: true });
+    if (data.project_id && !(await findById(env.DB, data.project_id))) throw new HttpError(422, 'Please fix the highlighted fields.', { project_id: 'Choose a project from the list.' });
+    await updateTestimonial(env.DB, id, data);
+    await audit(env.DB, admin.id, 'published' in data && data.published !== existing.published ? (data.published ? 'testimonial.publish' : 'testimonial.unpublish') : 'testimonial.update', 'testimonial', id);
+    return json({ ok: true, testimonial: await findTestimonial(env.DB, id) });
+  }));
+
+  r.delete('/api/admin/testimonials/:id', guarded(async ({ env, params, admin }) => {
+    const id = toId(params.id);
+    await deleteTestimonial(env.DB, id);
+    await audit(env.DB, admin.id, 'testimonial.delete', 'testimonial', id);
+    return json({ ok: true });
+  }));
+
+  // ---- Discovery calls ----------------------------------------------------------------------
+  r.get('/api/admin/calls', guarded(async ({ env }) => json({ ok: true, ...(await listCalls(env.DB)) })));
+
+  r.patch('/api/admin/calls/:id', guarded(async ({ env, params, request, admin }) => {
+    const id = toId(params.id);
+    if (!(await findCall(env.DB, id))) throw new HttpError(404, 'That call no longer exists.');
+    const { status } = validate(await readJson(request), callUpdateSchema);
+    await setCallStatus(env.DB, id, status);
+    await audit(env.DB, admin.id, `call.status.${status}`, 'call', id);
+    return json({ ok: true });
+  }));
+
+  r.delete('/api/admin/calls/:id', guarded(async ({ env, params, admin }) => {
+    const id = toId(params.id);
+    await deleteCall(env.DB, id);
+    await audit(env.DB, admin.id, 'call.delete', 'call', id);
     return json({ ok: true });
   }));
 
