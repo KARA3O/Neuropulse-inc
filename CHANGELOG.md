@@ -2,6 +2,33 @@
 
 All notable changes to this project. Format: [Keep a Changelog](https://keepachangelog.com), versioning: [SemVer](https://semver.org).
 
+## [1.2.0] - 2026-11-12
+
+Run `npm run db:migrate:remote` before deploying: this release adds migrations 0003 and 0004.
+
+### Added
+- **Case-study pages** at `/work/<slug>` (rendered by the Worker with the project's text, structured data and canonical link); `problem`, `solution` and `results` fields in the project editor; a "Case study" link on every work card
+- **Testimonials**: `testimonials` table, admin tab (add, edit, publish, delete), public `/api/testimonials`, home-page section (hidden until one is published) and quotes on the matching case study
+- **Instant estimate** section on the home page, driven by `site.config.json → estimator` (no prices are shown until you fill them in); the choices are saved with the enquiry (`quote_selection`)
+- **Discovery-call booking**: `call_bookings` table, `GET /api/calls/slots`, `POST /api/calls`, cancel link page, admin "Calls" tab, `.ics` calendar file and emails to both sides; hours in `src/server/lib/booking.js`, holidays in `BOOKING_BLOCKED_DATES`
+- **Automatic reply** email to every enquiry (reference number, WhatsApp and book-a-call buttons), in the site's colours; the owner alert now shows the lead source and estimate
+- **Lead source tracking**: "How did you hear about us?" field, `utm_source` / `utm_medium` / `utm_campaign` capture, dashboard "Where enquiries come from" chart, extra CSV columns
+- **Showreel**: the Neuropulse advert video, poster and transcript on the home page (`assets/video/`)
+- **Two-factor sign-in** (TOTP) for admins: set up and turn off under Dashboard → Security
+- **Error alerts**: an email to `NOTIFY_EMAIL` on unexpected 500 errors, throttled to one per 15 minutes, with no visitor details
+- **Retention**: the daily cron now deletes enquiries older than 24 months (except `won` clients), old call bookings and old audit entries
+- Optional Cloudflare Web Analytics beacon (`site.config.json → analytics.cloudflareToken`)
+- Shared Turnstile helper used by the enquiry and booking forms
+- 31 new unit tests (two-factor codes against the RFC 6238 test vectors, call slots, calendar files, validation, case-study rendering, 2FA sign-in, error-alert throttle) and 12 new smoke-test checks
+
+### Changed
+- `wrangler.jsonc`: `run_worker_first` now includes `/work/*`; new variables `WHATSAPP_URL`, `PHONE_DISPLAY`, `BOOKING_BLOCKED_DATES`
+- Content-Security-Policy allows `media-src 'self'` and the Cloudflare Web Analytics beacon
+- Home page: new "Book a free call" hero button; sections added in this order: showreel, estimate, testimonials, book a call
+
+### Seeded
+- TaskFlow (published, live). LVH application portal, Lecture Room Booking System and Valery Boutique are saved as hidden drafts: review them in the dashboard before publishing
+
 ## [1.1.0] - 2026-11-05
 
 ### Added

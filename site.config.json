@@ -11,6 +11,41 @@
   "phoneDisplay": "072 721 6200",
   "phoneIntl": "+27727216200",
   "whatsapp": "https://wa.me/27727216200",
+  "analytics": {
+    "_help": "Free, cookie-free visitor counts. Cloudflare dashboard > Analytics & Logs > Web Analytics > Add a site, copy the token, paste it below, then deploy. Leave empty to keep analytics off.",
+    "cloudflareToken": ""
+  },
+  "estimator": {
+    "_help": "Controls the 'Get an instant estimate' section. Prices are set to null so NO prices are shown until you decide them: replace each [min, max] with your real rand amounts (for example [4000, 9000]) and set showPrices to true. A price range is shown only when every selected item has both numbers. 'timeline' text comes from the FAQ on the home page.",
+    "showPrices": false,
+    "currency": "R",
+    "types": [
+      { "id": "website", "label": "Business website", "service": "Business website", "hint": "Look credible, get found, get enquiries", "timeline": "2 to 4 weeks", "price": [null, null] },
+      { "id": "booking", "label": "Booking or online store", "service": "Booking or e-commerce system", "hint": "Customers book and pay without calling", "timeline": "4 to 10 weeks", "price": [null, null] },
+      { "id": "webapp", "label": "Custom web application", "service": "Web application", "hint": "Portals, dashboards and internal tools", "timeline": "4 to 10 weeks", "price": [null, null] },
+      { "id": "android", "label": "Android app", "service": "Android app", "hint": "Native apps built with Kotlin", "timeline": null, "price": [null, null] }
+    ],
+    "pages": {
+      "appliesTo": ["website"],
+      "options": [
+        { "id": "small", "label": "1 to 3 pages", "price": [null, null] },
+        { "id": "medium", "label": "4 to 8 pages", "price": [null, null] },
+        { "id": "large", "label": "9 or more pages", "price": [null, null] }
+      ]
+    },
+    "extras": [
+      { "id": "admin-page", "label": "Admin page to edit your own content", "types": ["website"], "price": [null, null] },
+      { "id": "accounts", "label": "Customer accounts and booking history", "types": ["booking"], "price": [null, null] },
+      { "id": "reminders", "label": "Email confirmations and reminders", "types": ["booking"], "price": [null, null] },
+      { "id": "payments", "label": "Online payments (PayFast or Yoco)", "types": ["booking", "webapp"], "price": [null, null] },
+      { "id": "roles", "label": "Logins for staff, clients and admins", "types": ["webapp"], "price": [null, null] },
+      { "id": "reports", "label": "Reports and CSV exports", "types": ["webapp", "booking"], "price": [null, null] },
+      { "id": "imports", "label": "Import from Excel or an existing system", "types": ["webapp"], "price": [null, null] },
+      { "id": "shared-data", "label": "Connected to your website's database", "types": ["android"], "price": [null, null] },
+      { "id": "play-store", "label": "Play Store listing and release", "types": ["android"], "price": [null, null] },
+      { "id": "care", "label": "Monthly care plan (hosting, updates, small changes)", "types": ["website", "booking", "webapp", "android"], "price": [null, null] }
+    ]
+  },
   "socials": [
     { "id": "x",         "label": "X",         "handle": "@neuropulseinc",  "url": "https://x.com/neuropulseinc" },
     { "id": "instagram", "label": "Instagram", "handle": "@neuropulse_inc", "url": "https://www.instagram.com/neuropulse_inc" },

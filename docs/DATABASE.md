@@ -19,6 +19,14 @@ Source: [`diagrams/erd.mmd`](diagrams/erd.mmd)
 | `sessions` | Active admin sessions (hashed tokens) | Login | Every admin request |
 | `rate_limits` | Fixed-window counters per action and hashed IP | Public/admin POSTs | Same |
 | `audit_log` | Who changed what in the dashboard | Admin actions | Dashboard overview |
+| `testimonials` | Client quotes, optionally linked to a project | Admin dashboard | Public `/api/testimonials`, case-study pages |
+| `call_bookings` | Discovery calls booked from the website | Public booking form | Dashboard "Calls", cancel link |
+
+Added in migration 0003: `projects.problem / solution / results`; `enquiries.heard_from / utm_source / utm_medium / utm_campaign / quote_selection`; `admins.totp_secret / totp_enabled`.
+
+> `call_bookings` has a partial unique index on `starts_at` for active bookings (`confirmed`, `completed`, `no_show`), so the database itself refuses two bookings for the same time; cancelling a call frees the time.
+>
+> `admins.totp_secret` is the authenticator secret, stored as base32 text and used only when `totp_enabled = 1`. If an admin loses the phone, reset it with `npx wrangler d1 execute neuropulse-db --remote --command "UPDATE admins SET totp_enabled = 0, totp_secret = NULL WHERE email = 'you@example.com'"`.
 
 ### Status values
 
@@ -55,10 +63,10 @@ npm run db:migrate:local     # local .wrangler/state database
 npm run db:migrate:remote    # production
 ```
 
-**Adding a change:** create the next numbered file, for example `migrations/0003_add_testimonials.sql`. Never edit a migration that has already run in production; add a new one instead.
+**Adding a change:** create the next numbered file, for example `migrations/0005_add_invoices.sql`. Never edit a migration that has already run in production; add a new one instead.
 
 ```bash
-npx wrangler d1 migrations create neuropulse-db add_testimonials
+npx wrangler d1 migrations create neuropulse-db add_invoices
 ```
 
 ## Useful queries

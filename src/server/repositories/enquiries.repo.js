@@ -6,10 +6,14 @@ export async function createEnquiry(db, e) {
   return db
     .prepare(
       `INSERT INTO enquiries
-        (reference, name, email, phone, company, service, budget, timeline, message, contact_pref, consent, source_page, ip_hash)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)`,
+        (reference, name, email, phone, company, service, budget, timeline, message, contact_pref, consent, source_page, ip_hash,
+         heard_from, utm_source, utm_medium, utm_campaign, quote_selection)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18)`,
     )
-    .bind(e.reference, e.name, e.email, e.phone, e.company, e.service, e.budget, e.timeline, e.message, e.contact_pref, e.consent ? 1 : 0, e.source_page, e.ip_hash)
+    .bind(
+      e.reference, e.name, e.email, e.phone, e.company, e.service, e.budget, e.timeline, e.message, e.contact_pref, e.consent ? 1 : 0, e.source_page, e.ip_hash,
+      e.heard_from ?? null, e.utm_source ?? null, e.utm_medium ?? null, e.utm_campaign ?? null, e.quote_selection ?? null,
+    )
     .run();
 }
 
@@ -32,7 +36,7 @@ export async function listEnquiries(db, f = {}) {
   const [list, count] = await db.batch([
     db
       .prepare(
-        `SELECT id, reference, name, email, phone, company, service, budget, timeline, status, contact_pref, created_at
+        `SELECT id, reference, name, email, phone, company, service, budget, timeline, status, contact_pref, heard_from, utm_source, created_at
            FROM enquiries ${clause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
       )
       .bind(...binds),
@@ -60,14 +64,14 @@ export function deleteEnquiry(db, id) {
 
 export async function exportEnquiries(db) {
   const { results } = await db
-    .prepare('SELECT reference, created_at, status, name, email, phone, company, service, budget, timeline, contact_pref, message, notes FROM enquiries ORDER BY created_at DESC')
+    .prepare('SELECT reference, created_at, status, name, email, phone, company, service, budget, timeline, contact_pref, heard_from, utm_source, utm_medium, utm_campaign, quote_selection, message, notes FROM enquiries ORDER BY created_at DESC')
     .all();
   return results;
 }
 
 /** Numbers for the dashboard overview, in one round trip. */
 export async function dashboardStats(db) {
-  const [byStatus, week, month, projects, subs, daily] = await db.batch([
+  const [byStatus, week, month, projects, subs, daily, sources] = await db.batch([
     db.prepare('SELECT status, COUNT(*) AS n FROM enquiries GROUP BY status'),
     db.prepare(`SELECT COUNT(*) AS n FROM enquiries WHERE created_at >= strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days')`),
     db.prepare(`SELECT COUNT(*) AS n FROM enquiries WHERE created_at >= strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days')`),
@@ -77,6 +81,13 @@ export async function dashboardStats(db) {
       `SELECT substr(created_at, 1, 10) AS day, COUNT(*) AS n FROM enquiries
         WHERE created_at >= strftime('%Y-%m-%dT%H:%M:%fZ','now','-13 days')
         GROUP BY day ORDER BY day`,
+    ),
+    // Where enquiries come from (last 90 days): the answer to "How did you hear about us?",
+    // or the utm_source of the link they followed when they did not answer.
+    db.prepare(
+      `SELECT COALESCE(heard_from, utm_source, 'Not answered') AS source, COUNT(*) AS n FROM enquiries
+        WHERE created_at >= strftime('%Y-%m-%dT%H:%M:%fZ','now','-90 days')
+        GROUP BY source ORDER BY n DESC LIMIT 8`,
     ),
   ]);
   const statusCounts = Object.fromEntries(byStatus.results.map((r) => [r.status, r.n]));
@@ -90,6 +101,7 @@ export async function dashboardStats(db) {
       last30Days: month.results[0].n,
       winRate: closed ? Math.round((won / closed) * 100) : null,
       daily: daily.results,
+      sources: sources.results,
     },
     projects: {
       live: projects.results.filter((r) => r.status === 'live' && r.published).reduce((s, r) => s + r.n, 0),
