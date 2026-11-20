@@ -156,13 +156,26 @@ npx wrangler d1 execute neuropulse-db --remote --command "UPDATE admins SET totp
 4. Update `SITE_URL`, `site.config.json → url` and `robots.txt`, then `npm run deploy`.
 5. With the domain on Cloudflare you can also use **Email Routing** (free) to receive `hello@neuropulseinc.com` in your Gmail.
 
-## Optional: automatic deploys from GitHub
+## Automatic deploys from GitHub
 
-`.github/workflows/deploy.yml` runs the tests on every push and pull request, and deploys `main` to Cloudflare.
+**Cloudflare Workers Builds** is connected to the GitHub repo, so every push to `main` builds and deploys the Worker. Its settings are in the Cloudflare dashboard → **Workers & Pages → neuropulse-inc → Settings → Builds**, and its result shows as the **Workers Builds: neuropulse-inc** check on each commit.
 
-1. Cloudflare dashboard → **My Profile → API Tokens → Create token** → template **Edit Cloudflare Workers**. Also give it **D1: Edit** and **R2 Storage: Edit**.
-2. GitHub repo → **Settings → Secrets and variables → Actions** → add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (shown on the Workers dashboard).
-3. Push to `main`.
+`.github/workflows/ci.yml` only builds the site and runs the unit tests, on every push and pull request. It does not deploy, so it needs no Cloudflare secrets.
+
+**Database migrations are not applied automatically.** By default Workers Builds runs `npx wrangler deploy`, which does not touch D1. When a change adds a file to `migrations/`, apply it first and push afterwards (the new code needs the new tables):
+
+```powershell
+npm run db:migrate:remote
+git push
+```
+
+To have Workers Builds apply migrations on every deploy instead, change its **Deploy command** (Settings → Builds) to:
+
+```
+npx wrangler d1 migrations apply neuropulse-db --remote && npx wrangler deploy
+```
+
+If the next build then fails with an authentication error, give the build's API token **D1: Edit** permission (same settings page).
 
 ---
 

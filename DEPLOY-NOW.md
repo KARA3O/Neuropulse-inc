@@ -62,7 +62,7 @@ git commit -m "Version 1.2.0: case studies, testimonials, call booking, instant 
 git push -u origin upgrade-1-2-0
 ```
 
-Open the pull request on GitHub and merge it into `main`. The GitHub Action then runs the tests, applies the database migrations and deploys, using the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets you already set.
+Open the pull request on GitHub and merge it into `main`. The GitHub Action runs the tests, and Cloudflare Workers Builds deploys `main` automatically. Workers Builds does not apply database migrations, so run `npm run db:migrate:remote` (step 2 of Option A) before you merge.
 
 ---
 

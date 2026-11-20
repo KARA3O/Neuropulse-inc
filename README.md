@@ -105,7 +105,7 @@ neuropulse-inc/
 ├── site.config.json              company details used by the build (email, phone, socials)
 ├── .dev.vars.example             template for local secrets
 ├── .github/workflows/
-│   └── deploy.yml                CI: test on every push, deploy main to Cloudflare
+│   └── ci.yml                    CI: build + tests on every push and PR (Cloudflare Workers Builds deploys main)
 │
 ├── docs/                         engineering documentation
 │   ├── ARCHITECTURE.md           system context, layers, request flows
