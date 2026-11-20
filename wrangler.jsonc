@@ -47,7 +47,7 @@
   // `npx wrangler secret put NAME` for production, or .dev.vars locally.
   "vars": {
     "SITE_NAME": "Neuropulse Inc.",
-    "SITE_URL": "https://neuropulse-inc.workers.dev",
+    "SITE_URL": "https://neuropulse-inc.karabofelicia24.workers.dev",
     "NOTIFY_EMAIL": "neuropulse.inc@gmail.com",
     // While this is the Resend test sender, only YOUR inbox receives mail: owner alerts work, but the
     // automatic replies and call confirmations to visitors are skipped. After verifying your domain in

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://neuropulse-inc.workers.dev/sitemap.xml
+Sitemap: https://neuropulse-inc.karabofelicia24.workers.dev/sitemap.xml

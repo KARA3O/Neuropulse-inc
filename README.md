@@ -8,7 +8,7 @@ It runs entirely on **Cloudflare Workers + D1**, which is free at our scale.
 
 | | |
 |---|---|
-| **Live URL** | `https://neuropulse-inc.<your-subdomain>.workers.dev` (later `neuropulseinc.com`) |
+| **Live URL** | `https://neuropulse-inc.karabofelicia24.workers.dev` (later `neuropulseinc.com`) |
 | **Stack** | Vanilla HTML/CSS/JS front end · Cloudflare Worker API (JavaScript, ES modules) · Cloudflare D1 (SQLite) |
 | **Dependencies** | One dev dependency: `wrangler`. No framework, no runtime npm packages. |
 | **Contact** | neuropulse.inc@gmail.com · 072 721 6200 |

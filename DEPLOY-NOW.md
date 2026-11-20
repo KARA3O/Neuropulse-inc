@@ -42,7 +42,7 @@ This builds the site, runs the tests, does a dry run and uploads it. Open your s
 ### 4. Check it works (about 1 minute)
 
 ```powershell
-$env:BASE_URL = "https://neuropulse-inc.workers.dev"        # your real address
+$env:BASE_URL = "https://neuropulse-inc.karabofelicia24.workers.dev"        # your real address
 $env:ADMIN_EMAIL = "neuropulse.inc@gmail.com"
 $env:ADMIN_PASSWORD = "your-admin-password"
 npm run test:smoke
